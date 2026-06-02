@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="6 5 54 54" role="img" aria-label="Noted">
+  <!-- the wordmark's tomato "o", standalone — brand tomato body + arugula calyx -->
+  <path fill="#D14A33" d="M9 34 C9 22 19 15 33 15 C47 15 57 22 57 34 C57 47 47 58 33 58 C19 58 9 47 9 34 Z"/>
+  <g fill="none" stroke="#4F7135" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M33 16 C33 11 33 8 33 6"/>
+    <path d="M33 17 C29 13 24 11 21 12"/>
+    <path d="M33 17 C37 13 42 11 45 12"/>
+    <path d="M33 17 C30 12 28 8 26 6"/>
+    <path d="M33 17 C36 12 38 8 40 6"/>
+  </g>
+</svg>

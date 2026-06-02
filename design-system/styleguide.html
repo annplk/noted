@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noted — design system</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+<!-- Satoshi via Fontshare; Inter / system fallback -->
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+
+<!-- the design system -->
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+
+<!-- ==========================================================================
+     Styleguide page scaffolding ONLY. Not part of the design system —
+     this is the chrome that lays out the document (sections, swatches,
+     specimen frames, labels, the table of contents). The components
+     themselves come from components.css and use only tokens. No JavaScript.
+     ========================================================================== -->
+<style>
+  * { box-sizing: border-box; }
+  html { background: var(--surface-ground); scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--surface-ground);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--tint-tomato); }
+
+  .page { max-width: 960px; margin: 0 auto; padding: clamp(24px, 5vw, 56px) var(--gutter) 0; }
+
+  /* ---- table of contents (desktop only; quiet via size + spacing, not contrast) ---- */
+  .toc { display: none; }
+  .toc__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-4); }
+  .toc__link {
+    display: flex; gap: var(--space-8); align-items: baseline;
+    text-decoration: none; color: var(--text-primary);
+    font-size: var(--text-caption); font-weight: var(--weight-regular); letter-spacing: 0.02em;
+    padding: 3px 0;
+  }
+  .toc__num { color: var(--text-primary); font-variant-numeric: tabular-nums; min-width: 1.7em; }
+  .toc__link:hover,
+  .toc__link:hover .toc__num { color: var(--accent-primary); }
+  .toc__link.is-current,
+  .toc__link.is-current .toc__num { color: var(--accent-primary); }
+
+  /* ---- masthead ---- */
+  .doc-head { text-align: center; padding: clamp(32px, 7vw, 80px) 0 clamp(28px, 5vw, 56px); }
+  .doc-eyebrow {
+    font-size: var(--text-caption);
+    letter-spacing: 0.3em;
+    text-transform: lowercase;
+    color: var(--text-primary);
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    margin-top: clamp(20px, 4vw, 36px);
+    font-weight: var(--weight-bold);
+    color: var(--accent-primary);
+    font-size: clamp(56px, 15vw, 100px);
+    line-height: 0.9;
+    letter-spacing: -0.045em;
+  }
+  .wordmark .tomato-o { width: 0.62em; height: 0.66em; }
+  .doc-tagline { font-size: clamp(18px, 3.4vw, 22px); color: var(--text-primary); margin-top: clamp(20px, 4vw, 32px); }
+
+  /* ---- section scaffold ---- */
+  .section { padding: clamp(40px, 6vw, 64px) 0; border-top: 1px solid var(--border-hairline); scroll-margin-top: var(--space-24); }
+  .section__head { display: flex; align-items: baseline; gap: var(--space-16); }
+  .section__num { font-size: var(--text-section); font-weight: var(--weight-bold); letter-spacing: -0.01em; }
+  .section__name { font-size: var(--text-caption); letter-spacing: 0.16em; text-transform: lowercase; color: var(--text-primary); font-weight: var(--weight-regular); }
+  .section__intro { font-size: var(--text-body); color: var(--text-primary); max-width: 58ch; margin-top: var(--space-16); }
+  .section__body { margin-top: var(--space-32); }
+  .group-label {
+    font-size: var(--text-caption);
+    letter-spacing: 0.14em;
+    text-transform: lowercase;
+    color: var(--text-primary);
+    font-weight: var(--weight-regular);
+    margin: var(--space-32) 0 var(--space-16);
+  }
+
+  /* ---- generic specimen layout ---- */
+  .specimens { display: flex; flex-wrap: wrap; gap: clamp(24px, 4vw, 40px); align-items: flex-start; }
+  .spec { display: flex; flex-direction: column; gap: var(--space-16); }
+  .spec__label { font-size: var(--text-caption); color: var(--text-primary); letter-spacing: 0.04em; }
+  .spec__stage { display: flex; align-items: center; gap: var(--space-16); flex-wrap: wrap; }
+
+  /* mobile-scale frame: a 375px column on the paper ground */
+  .mobile { width: 375px; max-width: 100%; padding: var(--gutter); background: var(--surface-ground); border: 1px solid var(--border-hairline); border-radius: var(--radius-card); }
+  .mobile--flush { padding: 0; overflow: hidden; }
+  .mobile__caption { font-size: var(--text-caption); color: var(--text-primary); margin-bottom: var(--space-16); }
+  .choice-stack { display: flex; flex-direction: column; gap: var(--space-8); }   /* radio group spacing */
+
+  /* ---- palette ---- */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: var(--space-24); }
+  .swatch__chip { height: 80px; border-radius: var(--radius-card); border: 1px solid var(--border-hairline); }
+  .swatch__name { font-size: var(--text-body); font-weight: var(--weight-medium); margin-top: var(--space-16); }
+  .swatch__role { font-size: var(--text-caption); color: var(--text-primary); margin-top: var(--space-4); line-height: var(--leading-snug); }
+  .swatch__hex { font-size: var(--text-caption); color: var(--text-primary); margin-top: var(--space-8); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* ---- type scale ---- */
+  .type-row { display: flex; gap: var(--space-24); padding: var(--space-24) 0; border-top: 1px solid var(--border-hairline); align-items: baseline; }
+  .type-row:first-child { border-top: none; padding-top: 0; }
+  .type-row__meta { width: 168px; flex: none; }
+  .type-row__role { font-size: var(--text-caption); color: var(--text-primary); }
+  .type-row__size { font-size: var(--text-caption); color: var(--text-primary); margin-top: 2px; }
+  .type-row__spec { flex: 1; min-width: 0; }
+
+  /* ---- spacing: one compact horizontal row, bar width = the value ---- */
+  .space-scale { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-24); }
+  .space-step { display: flex; flex-direction: column; align-items: center; gap: var(--space-8); }
+  .space-step__bar { height: 48px; border-radius: 3px; background: var(--tint-tomato); }
+  .space-step__n { font-size: var(--text-caption); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  .space-note { font-size: var(--text-caption); color: var(--text-primary); margin-top: var(--space-24); }
+
+  /* ---- radii ---- */
+  .radii { display: flex; flex-wrap: wrap; gap: var(--space-24); }
+  .radius-tile { width: 96px; height: 96px; background: var(--surface-card); border: 1px solid var(--border-hairline); }
+  .radius-label { font-size: var(--text-caption); color: var(--text-primary); margin-top: var(--space-8); }
+
+  /* ---- elevation ---- */
+  .elev-pair { display: flex; flex-wrap: wrap; gap: var(--space-24); }
+  .elev-card { width: 200px; padding: var(--space-24); background: var(--surface-card); border-radius: var(--radius-card); }
+  .elev-card--flat { border: 1px solid var(--border-hairline); }
+  .elev-card--lift { box-shadow: var(--shadow-note); }
+  .elev-card__t { font-size: var(--text-body); font-weight: var(--weight-medium); }
+  .elev-card__d { font-size: var(--text-caption); color: var(--text-primary); margin-top: var(--space-4); }
+
+  /* ---- motion / icons ---- */
+  .note-line { font-size: var(--text-body); color: var(--text-primary); max-width: 58ch; }
+  .note-line b { font-weight: var(--weight-medium); }
+  .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: var(--space-24); }
+  .icon-cell { display: flex; flex-direction: column; align-items: center; gap: var(--space-8); text-align: center; }
+  .icon-cell__name { font-size: var(--text-caption); color: var(--text-primary); }
+
+  /* ---- button specimens: grouped by variant, aligned ---- */
+  .btn-states { display: flex; flex-wrap: wrap; gap: var(--space-24); align-items: flex-start; }
+  .btn-state { display: flex; flex-direction: column; gap: var(--space-8); align-items: flex-start; }
+  .btn-state__cap { font-size: var(--text-caption); color: var(--text-primary); }
+
+  /* ---- guidelines ---- */
+  .guidelines { display: flex; flex-direction: column; gap: var(--space-32); max-width: 64ch; }
+  .guideline__h { font-size: var(--text-section); font-weight: var(--weight-medium); }
+  .guideline__p { font-size: var(--text-body); color: var(--text-primary); margin-top: var(--space-8); }
+
+  /* ---- colophon ---- */
+  .colophon { text-align: center; padding: clamp(48px, 7vw, 80px) 0; border-top: 1px solid var(--border-hairline); }
+  .colophon .wordmark { font-size: 28px; margin: 0; }
+  .colophon .wordmark .tomato-o { width: 0.62em; height: 0.66em; }
+  .colophon__line { font-size: var(--text-caption); color: var(--text-primary); margin-top: var(--space-8); letter-spacing: 0.04em; }
+
+  /* ---- desktop: sticky TOC beside a centred content column ---- */
+  @media (min-width: 960px) {
+    .page {
+      max-width: 1180px;
+      display: grid;
+      grid-template-columns: 196px minmax(0, 1fr);
+      column-gap: var(--space-48);
+      align-items: start;
+    }
+    .doc-head { grid-column: 1 / -1; }
+    .colophon { grid-column: 1 / -1; }
+    .sections { min-width: 0; }
+    .toc {
+      display: block;
+      position: sticky;
+      top: var(--space-24);
+      align-self: start;
+      max-height: calc(100vh - var(--space-48));
+      overflow-y: auto;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .type-row { flex-direction: column; gap: var(--space-8); }
+    .type-row__meta { width: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
+  }
+</style>
+</head>
+
+<body class="ds">
+
+<!-- ==========================================================================
+     ICON SPRITE — single-stroke, 2px, rounded; stroke = currentColor so the
+     .icon colour token drives them. Decorative food set + functional set.
+     ========================================================================== -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <!-- wordmark glyph: the tomato "o" (fill body + arugula calyx).
+         Every calyx prong ends rounded and clear of the viewBox edge. -->
+    <symbol id="tomato-o" viewBox="9 4 48 54">
+      <path fill="currentColor" d="M9 34 C9 22 19 15 33 15 C47 15 57 22 57 34 C57 47 47 58 33 58 C19 58 9 47 9 34 Z"/>
+      <g fill="none" stroke="#4F7135" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M33 16 C33 11 33 8 33 6"/>
+        <path d="M33 17 C29 13 24 11 21 12"/>
+        <path d="M33 17 C37 13 42 11 45 12"/>
+        <path d="M33 17 C30 12 28 8 26 6"/>
+        <path d="M33 17 C36 12 38 8 40 6"/>
+      </g>
+    </symbol>
+
+    <!-- functional + food sets (24×24). Stroke/fill come from the .icon class
+         in components.css — inherited props that reach these symbols via <use>. -->
+    <g>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 L12 4 L21 11.5"/><path d="M5.5 10 V20 H18.5 V10"/><path d="M10 20 V14 H14 V20"/></symbol>
+      <symbol id="i-recipes" viewBox="0 0 24 24"><path d="M12 6 C10 4.5 7 4 4 5 V18 C7 17 10 17.5 12 19"/><path d="M12 6 C14 4.5 17 4 20 5 V18 C17 17 14 17.5 12 19"/><path d="M12 6 V19"/></symbol>
+      <symbol id="i-profile" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5.5 20 C5.5 16 8.5 14 12 14 C15.5 14 18.5 16 18.5 20"/></symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24"><path d="M9 5 a3 3 0 0 1 6 0 V11 a3 3 0 0 1 -6 0 Z"/><path d="M5.5 11 a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5 V21"/><path d="M9 21 H15"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8 H7 L8.5 5.5 H15.5 L17 8 H20 a1.5 1.5 0 0 1 1.5 1.5 V18 a1.5 1.5 0 0 1 -1.5 1.5 H4 a1.5 1.5 0 0 1 -1.5 -1.5 V9.5 a1.5 1.5 0 0 1 1.5 -1.5 Z"/><circle cx="12" cy="13" r="3.4"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4 L20.5 20.5"/></symbol>
+      <symbol id="i-barcode" viewBox="0 0 24 24"><path d="M3.75 6 V18" style="stroke-width:1.5;stroke-linecap:butt"/><path d="M7.2 6 V18" style="stroke-width:3;stroke-linecap:butt"/><path d="M10.65 6 V18" style="stroke-width:1.5;stroke-linecap:butt"/><path d="M13.35 6 V18" style="stroke-width:1.5;stroke-linecap:butt"/><path d="M16.8 6 V18" style="stroke-width:3;stroke-linecap:butt"/><path d="M20.25 6 V18" style="stroke-width:1.5;stroke-linecap:butt"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5 L8 12 L15 19"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6 L18 18"/><path d="M18 6 L6 18"/></symbol>
+      <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M9 5 L16 12 L9 19"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M16.5 4.5 a2.1 2.1 0 0 1 3 3 L7.5 19.5 L3.5 20.5 L4.5 16.5 Z"/><path d="M14.5 6.5 L17.5 9.5"/></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6 H20 L14 13 V19 L10 17 V13 Z"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 L9.5 17 L19 6.5"/></symbol>
+      <symbol id="i-portions" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 12 V4"/><path d="M12 12 L18.9 16"/></symbol>
+      <symbol id="i-add" viewBox="0 0 24 24"><path d="M12 5 V19"/><path d="M5 12 H19"/></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12 H19"/></symbol>
+      <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.5 9.3 C9.5 7.7 10.7 6.8 12 6.8 C13.4 6.8 14.5 7.8 14.5 9.1 C14.5 10.7 12.8 10.9 12 12 V13.2"/><path d="M12 16 V16.2"/></symbol>
+
+      <!-- decorative food set (24×24) -->
+      <symbol id="f-bowl" viewBox="0 0 24 24"><path d="M3.5 10.5 H20.5"/><path d="M5 11 C5.5 16.5 8.2 19.5 12 19.5 C15.8 19.5 18.5 16.5 19 11"/><path d="M10 4.5 C9 5.5 11 6.5 10 7.5"/><path d="M14 4.5 C13 5.5 15 6.5 14 7.5"/></symbol>
+      <symbol id="f-apple" viewBox="0 0 24 24"><path d="M12 8.6 C10.6 6.7 7.6 6.1 6 8.1 C3.8 10.9 5 17 8.4 19.6 C10 20.8 11 20 12 19.2 C13 20 14 20.8 15.6 19.6 C19 17 20.2 10.9 18 8.1 C16.4 6.1 13.4 6.7 12 8.6 Z"/><path d="M12 8.6 C12 6.6 12.4 5.2 13 4.4"/><path d="M13 5.4 C14.2 4 16 3.9 17 4.4 C16.6 6 14.6 6.6 13 5.4 Z"/></symbol>
+      <symbol id="f-tomato" viewBox="0 0 24 24"><path d="M5 13.5 C5 10 8.2 8.5 12 8.5 C15.8 8.5 19 10 19 13.5 C19 17.5 15.8 20 12 20 C8.2 20 5 17.5 5 13.5 Z"/><path d="M12 8.7 V5.8"/><path d="M12 9 C10.7 7.8 9.3 7.2 8.2 7.4"/><path d="M12 9 C13.3 7.8 14.7 7.2 15.8 7.4"/><path d="M12 9 C11.2 7.6 10.4 6.7 9.6 6.1"/><path d="M12 9 C12.8 7.6 13.6 6.7 14.4 6.1"/></symbol>
+      <symbol id="f-leaf" viewBox="0 0 24 24"><path d="M12 4 C7 8 7 16 12 20 C17 16 17 8 12 4 Z"/><path d="M12 18 V6"/></symbol>
+      <symbol id="f-spoon" viewBox="0 0 24 24"><ellipse cx="12" cy="7.5" rx="3.6" ry="4.6"/><path d="M12 12.2 V20.5"/></symbol>
+      <symbol id="f-carrot" viewBox="0 0 24 24"><path d="M8.6 9 C9.6 8.7 14.4 8.7 15.4 9 C16 12.8 14 18 12.6 19.6 C12.3 19.9 11.7 19.9 11.4 19.6 C10 18 8 12.8 8.6 9 Z"/><path d="M12 8.8 V4.4"/><path d="M12 6.6 C10.6 5.2 9.2 4.8 8 5"/><path d="M12 6.6 C13.4 5.2 14.8 4.8 16 5"/></symbol>
+      <symbol id="f-fish" viewBox="0 0 24 24"><path d="M3 12 C6 8.5 10.5 8.5 14.5 12 C10.5 15.5 6 15.5 3 12 Z"/><path d="M14.5 12 L20 8.5 L20 15.5 Z"/><path d="M9 9.8 C8 11 8 13 9 14.2"/></symbol>
+      <symbol id="f-egg" viewBox="0 0 24 24"><path d="M12 4 C8.5 4 6.5 10 6.5 14 C6.5 17.8 9 20 12 20 C15 20 17.5 17.8 17.5 14 C17.5 10 15.5 4 12 4 Z"/></symbol>
+      <symbol id="f-herb" viewBox="0 0 24 24"><path d="M12 21 V8 C12 6 12.6 5 14 4"/><path d="M12 12 C9.5 12 8 10.5 8 8.5 C10.5 8.5 12 10 12 12 Z"/><path d="M12 15.5 C14.5 15.5 16 14 16 12 C13.5 12 12 13.5 12 15.5 Z"/><path d="M12 9 C12 7 13 5.6 14.8 5 C14.8 7 13.8 8.6 12 9 Z"/></symbol>
+    </g>
+  </defs>
+</svg>
+
+
+<div class="page">
+
+  <!-- ===== masthead ===== -->
+  <header class="doc-head">
+    <p class="doc-eyebrow">design system</p>
+    <span class="wordmark">N<svg class="tomato-o" role="img" aria-label="o"><use href="#tomato-o"/></svg>ted</span>
+    <p class="doc-tagline">honest about what you ate.</p>
+  </header>
+
+
+  <!-- ===== table of contents ===== -->
+  <nav class="toc" aria-label="Sections">
+    <ol class="toc__list">
+      <li><a class="toc__link" href="#palette"><span class="toc__num">01</span> palette</a></li>
+      <li><a class="toc__link" href="#type"><span class="toc__num">02</span> type</a></li>
+      <li><a class="toc__link" href="#spacing"><span class="toc__num">03</span> spacing</a></li>
+      <li><a class="toc__link" href="#radii"><span class="toc__num">04</span> radii</a></li>
+      <li><a class="toc__link" href="#elevation"><span class="toc__num">05</span> elevation</a></li>
+      <li><a class="toc__link" href="#motion"><span class="toc__num">06</span> motion</a></li>
+      <li><a class="toc__link" href="#icons"><span class="toc__num">07</span> icons</a></li>
+      <li><a class="toc__link" href="#button"><span class="toc__num">08</span> button</a></li>
+      <li><a class="toc__link" href="#chip"><span class="toc__num">09</span> chip</a></li>
+      <li><a class="toc__link" href="#describe-input"><span class="toc__num">10</span> describe-input</a></li>
+      <li><a class="toc__link" href="#estimate"><span class="toc__num">11</span> estimate</a></li>
+      <li><a class="toc__link" href="#food-item-row"><span class="toc__num">12</span> food-item row</a></li>
+      <li><a class="toc__link" href="#note-cards"><span class="toc__num">13</span> note cards</a></li>
+      <li><a class="toc__link" href="#recipe-card"><span class="toc__num">14</span> recipe card</a></li>
+      <li><a class="toc__link" href="#tab-bar"><span class="toc__num">15</span> tab bar</a></li>
+      <li><a class="toc__link" href="#budget-left"><span class="toc__num">16</span> budget-left</a></li>
+      <li><a class="toc__link" href="#why-this-fits"><span class="toc__num">17</span> why this fits you</a></li>
+      <li><a class="toc__link" href="#screen-header"><span class="toc__num">18</span> screen header</a></li>
+      <li><a class="toc__link" href="#step-indicator"><span class="toc__num">19</span> step indicator</a></li>
+      <li><a class="toc__link" href="#basic-field"><span class="toc__num">20</span> basic field</a></li>
+      <li><a class="toc__link" href="#toggle"><span class="toc__num">21</span> toggle</a></li>
+      <li><a class="toc__link" href="#choice-card"><span class="toc__num">22</span> choice card</a></li>
+      <li><a class="toc__link" href="#macro-pill"><span class="toc__num">23</span> macro pill</a></li>
+      <li><a class="toc__link" href="#picker"><span class="toc__num">24</span> picker</a></li>
+      <li><a class="toc__link" href="#guidelines"><span class="toc__num">25</span> guidelines</a></li>
+    </ol>
+  </nav>
+
+
+  <main class="sections">
+
+  <!-- ===== 01 · palette ===== -->
+  <section class="section" id="palette">
+    <div class="section__head"><span class="section__num">01</span><span class="section__name">palette</span></div>
+    <p class="section__intro">Warm, homely, anti-clinical. Tomato is appetite — a hero accent for action and the wordmark, never for alarm. Every calorie number stays ink.</p>
+    <div class="section__body">
+      <div class="swatches">
+        <div class="swatch"><div class="swatch__chip" style="background:var(--paper)"></div><div class="swatch__name">paper</div><div class="swatch__role">app background / ground</div><div class="swatch__hex">#F9F7F3</div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--note-white)"></div><div class="swatch__name">note white</div><div class="swatch__role">card surface</div><div class="swatch__hex">#FFFFFF</div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--ink)"></div><div class="swatch__name">ink</div><div class="swatch__role">text, numbers, strokes</div><div class="swatch__hex">#2B2722</div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--tomato)"></div><div class="swatch__name">tomato</div><div class="swatch__role">hero accent — appetite, never alarm</div><div class="swatch__hex">#D14A33</div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--arugula)"></div><div class="swatch__name">arugula</div><div class="swatch__role">fresh / recipes accent</div><div class="swatch__hex">#4F7135</div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--focaccia)"></div><div class="swatch__name">focaccia</div><div class="swatch__role">warm secondary accent</div><div class="swatch__hex">#DFA64A</div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--muted)"></div><div class="swatch__name">muted</div><div class="swatch__role">hairlines, tracks, affordance icons (not text)</div><div class="swatch__hex">#8A8276</div></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--divider)"></div><div class="swatch__name">divider</div><div class="swatch__role">hairlines / row separators</div><div class="swatch__hex">#E7E4DD</div></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 02 · type ===== -->
+  <section class="section" id="type">
+    <div class="section__head"><span class="section__num">02</span><span class="section__name">type</span></div>
+    <p class="section__intro">Satoshi throughout. The voice style — italic, lowercase, lightly indented — is how the friend speaks. Numbers are rounded and prefixed with ≈; the rounding is the honesty.</p>
+    <div class="section__body">
+
+      <div class="type-row">
+        <div class="type-row__meta"><div class="type-row__role">estimate · hero</div><div class="type-row__size">40 / bold</div></div>
+        <div class="type-row__spec">
+          <span class="estimate estimate--hero"><span class="estimate__value"><span class="estimate__approx">≈</span>1,250</span></span>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-row__meta"><div class="type-row__role">estimate · inline</div><div class="type-row__size">28 / bold</div></div>
+        <div class="type-row__spec">
+          <span class="estimate estimate--inline"><span class="estimate__value"><span class="estimate__approx">≈</span>1,500</span></span>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-row__meta"><div class="type-row__role">screen title</div><div class="type-row__size">28 / bold</div></div>
+        <div class="type-row__spec"><span class="txt-title">what did you eat?</span></div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-row__meta"><div class="type-row__role">section heading</div><div class="type-row__size">20 / medium</div></div>
+        <div class="type-row__spec"><span class="txt-section">today on the fridge</span></div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-row__meta"><div class="type-row__role">button text</div><div class="type-row__size">17 / medium</div></div>
+        <div class="type-row__spec"><span class="txt-button">log it</span></div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-row__meta"><div class="type-row__role">body / ui</div><div class="type-row__size">16 / regular</div></div>
+        <div class="type-row__spec"><span class="txt-body">describe your meal in plain words and we’ll do the rounding.</span></div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-row__meta"><div class="type-row__role">friend voice</div><div class="type-row__size">16 / italic</div></div>
+        <div class="type-row__spec"><span class="txt-voice">a hero’s lunch — respect.</span></div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-row__meta"><div class="type-row__role">caption</div><div class="type-row__size">14 / regular</div></div>
+        <div class="type-row__spec"><span class="txt-caption">timestamps, labels · 14px is the floor</span></div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ===== 03 · spacing ===== -->
+  <section class="section" id="spacing">
+    <div class="section__head"><span class="section__num">03</span><span class="section__name">spacing</span></div>
+    <p class="section__intro">A pure 8-pt scale — each bar’s width is its value.</p>
+    <div class="section__body">
+      <div class="space-scale">
+        <div class="space-step"><span class="space-step__bar" style="width:4px"></span><span class="space-step__n">4</span></div>
+        <div class="space-step"><span class="space-step__bar" style="width:8px"></span><span class="space-step__n">8</span></div>
+        <div class="space-step"><span class="space-step__bar" style="width:16px"></span><span class="space-step__n">16</span></div>
+        <div class="space-step"><span class="space-step__bar" style="width:24px"></span><span class="space-step__n">24</span></div>
+        <div class="space-step"><span class="space-step__bar" style="width:32px"></span><span class="space-step__n">32</span></div>
+        <div class="space-step"><span class="space-step__bar" style="width:48px"></span><span class="space-step__n">48</span></div>
+        <div class="space-step"><span class="space-step__bar" style="width:64px"></span><span class="space-step__n">64</span></div>
+      </div>
+      <p class="space-note">gutter = 24</p>
+    </div>
+  </section>
+
+
+  <!-- ===== 04 · radii ===== -->
+  <section class="section" id="radii">
+    <div class="section__head"><span class="section__num">04</span><span class="section__name">radii</span></div>
+    <div class="section__body">
+      <div class="radii">
+        <div><div class="radius-tile" style="border-radius:var(--radius-button)"></div><div class="radius-label">12 · buttons</div></div>
+        <div><div class="radius-tile" style="border-radius:var(--radius-card)"></div><div class="radius-label">14 · cards + inputs</div></div>
+        <div><div class="radius-tile" style="border-radius:var(--radius-pill)"></div><div class="radius-label">pill · chips</div></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 05 · elevation ===== -->
+  <section class="section" id="elevation">
+    <div class="section__head"><span class="section__num">05</span><span class="section__name">elevation</span></div>
+    <p class="section__intro">One soft shadow, and it belongs to a single thing: today’s note, sitting slightly proud of the fridge. Everything else is flat.</p>
+    <div class="section__body">
+      <div class="elev-pair">
+        <div class="elev-card elev-card--lift"><div class="elev-card__t">elevated</div><div class="elev-card__d">today’s note only</div></div>
+        <div class="elev-card elev-card--flat"><div class="elev-card__t">flat</div><div class="elev-card__d">everything else</div></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 06 · motion ===== -->
+  <section class="section" id="motion">
+    <div class="section__head"><span class="section__num">06</span><span class="section__name">motion</span></div>
+    <div class="section__body">
+      <p class="note-line">One duration (<b>200ms</b>) and one easing (<b>ease-out</b>), used only for meaningful state transitions: today’s note settling onto the fridge, the estimate range easing open, the once-a-day recipe nudge appearing, and the toggle knob sliding. Beyond these the interface stays still — with one exception, below.</p>
+      <p class="note-line" style="margin-top:var(--space-16)"><b>Launch screen.</b> A one-time brand greeting, shown once at start: a tomato grows to fill the screen, then settles and fades into the ‘o’ of the wordmark as <b>Noted</b> and the tagline ease in. It is the only motion longer than 200ms — the tomato’s settle is ≈ 900ms, with the wordmark and tagline following just after — and the only decorative animation in the system: a greeting, not a transition. It still rides the one ease-out, and honours reduced motion (the growing tomato is dropped; the wordmark simply appears).</p>
+    </div>
+  </section>
+
+
+  <!-- ===== 07 · icons ===== -->
+  <section class="section" id="icons">
+    <div class="section__head"><span class="section__num">07</span><span class="section__name">icons</span></div>
+    <p class="section__intro">Single-stroke line-art, 2px, rounded ends, drawn in ink. Simple beats detailed.</p>
+    <div class="section__body">
+
+      <p class="group-label">decorative · food</p>
+      <div class="icon-grid">
+        <div class="icon-cell"><svg class="icon icon--food"><use href="#f-bowl"/></svg><span class="icon-cell__name">bowl</span></div>
+        <div class="icon-cell"><svg class="icon icon--food"><use href="#f-apple"/></svg><span class="icon-cell__name">apple</span></div>
+        <div class="icon-cell"><svg class="icon icon--food"><use href="#f-tomato"/></svg><span class="icon-cell__name">tomato</span></div>
+        <div class="icon-cell"><svg class="icon icon--food"><use href="#f-leaf"/></svg><span class="icon-cell__name">leaf</span></div>
+        <div class="icon-cell"><svg class="icon icon--food"><use href="#f-spoon"/></svg><span class="icon-cell__name">spoon</span></div>
+        <div class="icon-cell"><svg class="icon icon--food"><use href="#f-carrot"/></svg><span class="icon-cell__name">carrot</span></div>
+        <div class="icon-cell"><svg class="icon icon--food"><use href="#f-fish"/></svg><span class="icon-cell__name">fish</span></div>
+        <div class="icon-cell"><svg class="icon icon--food"><use href="#f-egg"/></svg><span class="icon-cell__name">egg</span></div>
+        <div class="icon-cell"><svg class="icon icon--food"><use href="#f-herb"/></svg><span class="icon-cell__name">herb</span></div>
+      </div>
+
+      <p class="group-label">functional · ui</p>
+      <div class="icon-grid">
+        <div class="icon-cell"><svg class="icon"><use href="#i-home"/></svg><span class="icon-cell__name">home</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-recipes"/></svg><span class="icon-cell__name">recipes</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-profile"/></svg><span class="icon-cell__name">profile</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-mic"/></svg><span class="icon-cell__name">mic</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-camera"/></svg><span class="icon-cell__name">camera</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-search"/></svg><span class="icon-cell__name">search</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-barcode"/></svg><span class="icon-cell__name">barcode</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-back"/></svg><span class="icon-cell__name">back</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-close"/></svg><span class="icon-cell__name">close</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-chevron-right"/></svg><span class="icon-cell__name">chevron</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-edit"/></svg><span class="icon-cell__name">edit</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-filter"/></svg><span class="icon-cell__name">filter</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-check"/></svg><span class="icon-cell__name">check</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-portions"/></svg><span class="icon-cell__name">portions</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-add"/></svg><span class="icon-cell__name">add</span></div>
+        <div class="icon-cell"><svg class="icon"><use href="#i-help"/></svg><span class="icon-cell__name">help</span></div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ===== 08 · button ===== -->
+  <section class="section" id="button">
+    <div class="section__head"><span class="section__num">08</span><span class="section__name">button</span></div>
+    <div class="section__body">
+      <div class="specimens">
+
+        <div class="spec"><span class="spec__label">primary</span>
+          <div class="btn-states">
+            <span class="btn-state"><button class="btn btn--primary">log it</button><span class="btn-state__cap">default</span></span>
+            <span class="btn-state"><button class="btn btn--primary is-pressed">log it</button><span class="btn-state__cap">pressed</span></span>
+            <span class="btn-state"><button class="btn btn--primary" disabled>continue</button><span class="btn-state__cap">disabled</span></span>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">secondary</span>
+          <div class="btn-states">
+            <span class="btn-state"><button class="btn btn--secondary">redescribe</button><span class="btn-state__cap">default</span></span>
+            <span class="btn-state"><button class="btn btn--secondary is-pressed">redescribe</button><span class="btn-state__cap">pressed</span></span>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">text / link</span>
+          <div class="btn-states">
+            <span class="btn-state"><button class="btn btn--text">skip for now</button><span class="btn-state__cap">default</span></span>
+            <span class="btn-state"><button class="btn btn--text is-pressed">skip for now</button><span class="btn-state__cap">pressed</span></span>
+            <span class="btn-state"><button class="btn btn--text" disabled>skip for now</button><span class="btn-state__cap">disabled</span></span>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">primary · full-width (mobile CTA)</span>
+          <div class="mobile"><button class="btn btn--primary btn--block">log it</button></div>
+        </div>
+
+        <div class="spec"><span class="spec__label">focus ring (keyboard)</span>
+          <div class="spec__stage"><button class="btn btn--primary is-focus">log it</button></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 09 · chip ===== -->
+  <section class="section" id="chip">
+    <div class="section__head"><span class="section__num">09</span><span class="section__name">chip</span></div>
+    <p class="section__intro">Diet / allergy selection and recipe filters — lighter than a button, so it reads as a selectable tag. Selection is positive: filled tomato, never an alarm. Each chip is a <code>&lt;label&gt;</code> wrapping a hidden <code>.chip__input</code> (checkbox for multi-select, radio for single-select); tapping toggles it — pure CSS, no JS.</p>
+    <div class="section__body">
+      <div class="specimens">
+        <div class="spec"><span class="spec__label">unselected · tap to select</span><div class="spec__stage">
+          <label class="chip"><input class="chip__input" type="checkbox"><svg class="icon chip__check" aria-hidden="true"><use href="#i-check"/></svg>vegan</label>
+          <label class="chip"><input class="chip__input" type="checkbox"><svg class="icon chip__check" aria-hidden="true"><use href="#i-check"/></svg>pescatarian</label>
+          <label class="chip"><input class="chip__input" type="checkbox"><svg class="icon chip__check" aria-hidden="true"><use href="#i-check"/></svg>gluten-free</label>
+        </div></div>
+        <div class="spec"><span class="spec__label">selected · tap to toggle</span><div class="spec__stage">
+          <label class="chip"><input class="chip__input" type="checkbox" checked><svg class="icon chip__check" aria-hidden="true"><use href="#i-check"/></svg>vegetarian</label>
+          <label class="chip"><input class="chip__input" type="checkbox" checked><svg class="icon chip__check" aria-hidden="true"><use href="#i-check"/></svg>peanuts</label>
+        </div></div>
+        <div class="spec"><span class="spec__label">recipe filters · single-select</span><div class="spec__stage">
+          <label class="chip"><input class="chip__input" type="radio" name="filter-demo" checked><svg class="icon chip__check" aria-hidden="true"><use href="#i-check"/></svg>in budget</label>
+          <label class="chip"><input class="chip__input" type="radio" name="filter-demo"><svg class="icon chip__check" aria-hidden="true"><use href="#i-check"/></svg>quick</label>
+          <label class="chip"><input class="chip__input" type="radio" name="filter-demo"><svg class="icon chip__check" aria-hidden="true"><use href="#i-check"/></svg>veggie</label>
+        </div></div>
+        <div class="spec"><span class="spec__label">chip — add (concept; no action)</span><div class="spec__stage">
+          <label class="chip"><input class="chip__input" type="checkbox" checked><svg class="icon chip__check" aria-hidden="true"><use href="#i-check"/></svg>vegetarian</label>
+          <label class="chip"><input class="chip__input" type="checkbox"><svg class="icon chip__check" aria-hidden="true"><use href="#i-check"/></svg>vegan</label>
+          <button class="chip chip--add" type="button" aria-label="add your own"><svg class="icon" aria-hidden="true"><use href="#i-add"/></svg></button>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 10 · describe-input ===== -->
+  <section class="section" id="describe-input">
+    <div class="section__head"><span class="section__num">10</span><span class="section__name">describe-input</span></div>
+    <p class="section__intro">The way in — a real field you can tap and type into. A slim prompt on home expands to a multiline field on the log screen. The low-confidence state stays calm: a question mark and ink, never red.</p>
+    <div class="section__body">
+      <div class="specimens">
+
+        <div class="spec"><span class="spec__label">resting · home prompt</span>
+          <div class="mobile">
+            <div class="describe">
+              <input class="describe__input" type="text" placeholder="what did you eat?" aria-label="describe your meal">
+              <button class="describe__icon" type="button" aria-label="dictate"><svg class="icon"><use href="#i-mic"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">focused · expanded (log)</span>
+          <div class="mobile">
+            <div class="describe describe--expanded is-focus">
+              <textarea class="describe__field" rows="2" aria-label="describe your meal">a big bowl of veggie pasta with extra parmesan</textarea>
+              <div class="describe__tools">
+                <button class="describe__icon" type="button" aria-label="camera"><svg class="icon"><use href="#i-camera"/></svg></button>
+                <button class="describe__icon" type="button" aria-label="barcode"><svg class="icon"><use href="#i-barcode"/></svg></button>
+                <span class="describe__tools-spacer"></span>
+                <button class="describe__icon" type="button" aria-label="dictate"><svg class="icon"><use href="#i-mic"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">error · low-confidence</span>
+          <div class="mobile">
+            <div class="describe describe--expanded describe--error">
+              <textarea class="describe__field" rows="1" aria-label="describe your meal">asdfgh</textarea>
+              <p class="describe__hint"><svg class="icon" aria-hidden="true"><use href="#i-help"/></svg>didn’t quite catch that — redescribe?</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 11 · estimate ===== -->
+  <section class="section" id="estimate">
+    <div class="section__head"><span class="section__num">11</span><span class="section__name">estimate</span></div>
+    <p class="section__intro">An honest, rounded ≈ you can trust at a glance. The exact range hides behind a tap on the number; macros sit quietly beneath, never competing.</p>
+    <div class="section__body">
+      <div class="specimens">
+
+        <div class="spec"><span class="spec__label">hero (result screen)</span><div class="spec__stage">
+          <span class="estimate estimate--hero">
+            <span class="estimate__value"><span class="estimate__approx">≈</span>1,250</span>
+            <span class="estimate__range">tap to see range</span>
+            <span class="macros">protein ≈ 55 · carbs ≈ 120 · fat ≈ 60 (g)</span>
+          </span>
+        </div></div>
+
+        <div class="spec"><span class="spec__label">inline (on a card)</span><div class="spec__stage">
+          <span class="estimate estimate--inline"><span class="estimate__value"><span class="estimate__approx">≈</span>1,500</span></span>
+        </div></div>
+
+        <div class="spec"><span class="spec__label">range — resting</span><div class="spec__stage">
+          <span class="estimate estimate--hero"><span class="estimate__value"><span class="estimate__approx">≈</span>1,250</span><span class="estimate__range">tap to see range</span></span>
+        </div></div>
+
+        <div class="spec"><span class="spec__label">range — revealed</span><div class="spec__stage">
+          <span class="estimate estimate--hero"><span class="estimate__value"><span class="estimate__approx">≈</span>1,250</span><span class="estimate__range estimate__range--revealed">likely 1,100–1,400</span></span>
+        </div></div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 12 · food-item row ===== -->
+  <section class="section" id="food-item-row">
+    <div class="section__head"><span class="section__num">12</span><span class="section__name">food-item row</span></div>
+    <p class="section__intro">The evidence under an estimate, tappable to correct. Names are uniform ink and medium-weight; the quantity is lighter. The same row is reused for search results.</p>
+    <div class="section__body">
+      <div class="specimens">
+
+        <div class="spec"><span class="spec__label">evidence rows · hairline dividers</span>
+          <div class="mobile">
+            <div class="food-row food-row--evidence">
+              <span class="food-row__body"><span class="food-row__name">veggie pasta</span><span class="food-row__meta">1 big bowl</span></span>
+              <button class="food-row__action" type="button" aria-label="edit veggie pasta"><svg class="icon"><use href="#i-edit"/></svg></button>
+            </div>
+            <div class="food-row food-row--evidence">
+              <span class="food-row__body"><span class="food-row__name">tomato &amp; basil sauce</span><span class="food-row__meta">1 serving</span></span>
+              <button class="food-row__action" type="button" aria-label="edit tomato &amp; basil sauce"><svg class="icon"><use href="#i-edit"/></svg></button>
+            </div>
+            <div class="food-row food-row--evidence">
+              <span class="food-row__body"><span class="food-row__name">parmesan</span><span class="food-row__meta">extra · 2 tbsp</span></span>
+              <button class="food-row__action" type="button" aria-label="edit parmesan"><svg class="icon"><use href="#i-edit"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">editing · stepper + remove</span>
+          <div class="mobile">
+            <div class="food-row is-editing">
+              <span class="food-row__body"><span class="food-row__name">cherry tomatoes</span></span>
+              <span class="stepper">
+                <button class="stepper__btn" type="button" aria-label="fewer"><svg class="icon"><use href="#i-minus"/></svg></button>
+                <span class="stepper__value">2</span>
+                <button class="stepper__btn" type="button" aria-label="more"><svg class="icon"><use href="#i-add"/></svg></button>
+              </span>
+              <button class="food-row__remove" type="button" aria-label="remove"><svg class="icon"><use href="#i-close"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">reused · search results</span>
+          <div class="mobile">
+            <div class="food-row">
+              <span class="food-row__body"><span class="food-row__name">banana, raw</span><span class="food-row__meta">per medium</span></span>
+              <button class="food-row__action" type="button" aria-label="add"><svg class="icon"><use href="#i-add"/></svg></button>
+            </div>
+            <div class="food-row">
+              <span class="food-row__body"><span class="food-row__name">banana smoothie</span><span class="food-row__meta">per glass</span></span>
+              <button class="food-row__action" type="button" aria-label="add"><svg class="icon"><use href="#i-add"/></svg></button>
+            </div>
+          </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 13 · note cards ===== -->
+  <section class="section" id="note-cards">
+    <div class="section__head"><span class="section__num">13</span><span class="section__name">note cards</span></div>
+    <p class="section__intro">White notes on the paper fridge. System rule: today’s note = tomato magnet + −1.5° tilt + shadow lift; the friend’s nudge = arugula magnet + +1.5° tilt (opposite) + same shadow lift; history = flat, no magnet. Cards stay calorie-≈ only.</p>
+    <div class="section__body">
+      <div class="specimens">
+
+        <div class="spec"><span class="spec__label">today — tomato magnet · −1.5°</span>
+          <div class="mobile">
+            <div class="card card--today">
+              <span class="card__magnet"></span>
+              <div class="card__label">today · 1:14 pm</div>
+              <div class="card__meal">veggie pasta</div>
+              <span class="estimate estimate--inline"><span class="estimate__value"><span class="estimate__approx">≈</span>1,500</span><span class="estimate__range">tap to see range</span></span>
+              <div class="card__rule"></div>
+              <div class="card__items">pasta · tomato · basil</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">history</span>
+          <div class="mobile">
+            <div class="card card--history">
+              <div class="card__label">yesterday · 8:02 am</div>
+              <div class="card__meal">morning porridge</div>
+              <span class="estimate estimate--inline"><span class="estimate__value"><span class="estimate__approx">≈</span>350</span></span>
+              <div class="card__rule"></div>
+              <div class="card__items">oats · banana · honey</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">friend's nudge — arugula magnet · +1.5°</span>
+          <div class="mobile">
+            <div class="card card--nudge">
+              <span class="card__magnet card__magnet--arugula"></span>
+              <svg class="icon icon--fresh" aria-hidden="true"><use href="#f-leaf"/></svg>
+              <p class="txt-voice txt-voice--fresh">fancy something green tonight?</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 14 · recipe card ===== -->
+  <section class="section" id="recipe-card">
+    <div class="section__head"><span class="section__num">14</span><span class="section__name">recipe card</span></div>
+    <p class=”section__intro”>A feed item, lighter than a note — no tilt, no magnet. The “in budget” pill uses arugula tint + green check icon + ink text; the “over budget” pill is focaccia tint + ink text — one family. Calorie numbers stay ink, never coloured. The one photographic exception: the marker can hold a photo thumbnail, and the recipe detail gets a header photo — every other illustration stays line-art.</p>
+    <div class="section__body">
+      <div class="specimens">
+        <div class="spec"><span class="spec__label">in budget</span>
+          <div class="mobile">
+            <div class="recipe-card">
+              <span class="recipe-card__marker"><svg class="icon icon--food" aria-hidden="true"><use href="#f-herb"/></svg></span>
+              <span class="recipe-card__body">
+                <span class="recipe-card__title">lemony green orzo</span>
+                <span class="recipe-card__meta"><span style="white-space:nowrap">20 min</span> · vegetarian</span>
+                <span class="recipe-card__pill"><svg class="icon" style="width:14px;height:14px"><use href="#i-check"/></svg>in budget · <span class="recipe-card__kcal">≈ 500</span></span>
+              </span>
+              <svg class="icon" aria-hidden="true" style="color:var(--muted)"><use href="#i-chevron-right"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="spec"><span class="spec__label">pressed</span>
+          <div class="mobile">
+            <div class="recipe-card is-pressed">
+              <span class="recipe-card__marker"><svg class="icon icon--food" aria-hidden="true"><use href="#f-bowl"/></svg></span>
+              <span class="recipe-card__body">
+                <span class="recipe-card__title">spring minestrone</span>
+                <span class="recipe-card__meta"><span style="white-space:nowrap">35 min</span> · vegetarian</span>
+                <span class="recipe-card__pill"><svg class="icon" style="width:14px;height:14px"><use href="#i-check"/></svg>in budget · <span class="recipe-card__kcal">≈ 450</span></span>
+              </span>
+              <svg class="icon" aria-hidden="true" style="color:var(--muted)"><use href="#i-chevron-right"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="spec"><span class="spec__label">over budget (calm, never red)</span>
+          <div class="mobile">
+            <div class="recipe-card">
+              <span class="recipe-card__marker"><svg class="icon icon--food" aria-hidden="true"><use href="#f-spoon"/></svg></span>
+              <span class="recipe-card__body">
+                <span class="recipe-card__title">wild mushroom risotto</span>
+                <span class="recipe-card__meta"><span style="white-space:nowrap">30 min</span> · vegetarian</span>
+                <span class="recipe-card__pill recipe-card__pill--over"><span class="recipe-card__kcal">≈ 120 over</span></span>
+              </span>
+              <svg class="icon" aria-hidden="true" style="color:var(--muted)"><use href="#i-chevron-right"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">§2 · photo thumbnail — recipes use photography</span>
+          <div class="mobile">
+            <div class="recipe-card">
+              <span class="recipe-card__marker recipe-card__marker--photo"><img class="recipe-card__photo" src="../assets/recipes/lemony-green-orzo.jpg" alt=""></span>
+              <span class="recipe-card__body">
+                <span class="recipe-card__title">lemony green orzo</span>
+                <span class="recipe-card__meta"><span style="white-space:nowrap">20 min</span> · vegetarian</span>
+                <span class="recipe-card__pill"><svg class="icon" style="width:14px;height:14px"><use href="#i-check"/></svg>in budget · <span class="recipe-card__kcal">≈ 500</span></span>
+              </span>
+              <svg class="icon" aria-hidden="true" style="color:var(--muted)"><use href="#i-chevron-right"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">§2 · recipe detail — header photo</span>
+          <div class="mobile">
+            <div class="recipe-hero"><img class="recipe-hero__img" src="../assets/recipes/lemony-green-orzo.jpg" alt="lemony green orzo"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 15 · tab bar ===== -->
+  <section class="section" id="tab-bar">
+    <div class="section__head"><span class="section__num">15</span><span class="section__name">tab bar</span></div>
+    <p class="section__intro">Home · Search · Recipes · Profile. Icon and label share a colour — ink when inactive, tomato when active. The active icon sits in a soft <code>--tint-tomato</code> pill (<code>.tab__icon</code>); inactive tabs are unchanged. Search drills into the describe screen; logging enters through the home prompt or the search tab. <code>.tabbar--tight</code> reduces the icon nest padding to 3px top/bottom (tighter icon↔label gap via <code>--space-2</code>).</p>
+    <div class="section__body">
+      <div class="specimens">
+
+        <div class="spec"><span class="spec__label">home active — 4 tabs, tight gap</span>
+          <div class="mobile mobile--flush" style="max-width:375px">
+            <nav class="tabbar tabbar--tight">
+              <button class="tab is-active" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-home"/></svg></span><span class="tab__label">home</span></button>
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-search"/></svg></span><span class="tab__label">search</span></button>
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-recipes"/></svg></span><span class="tab__label">recipes</span></button>
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-profile"/></svg></span><span class="tab__label">profile</span></button>
+            </nav>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">search active (→ describe)</span>
+          <div class="mobile mobile--flush" style="max-width:375px">
+            <nav class="tabbar tabbar--tight">
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-home"/></svg></span><span class="tab__label">home</span></button>
+              <button class="tab is-active" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-search"/></svg></span><span class="tab__label">search</span></button>
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-recipes"/></svg></span><span class="tab__label">recipes</span></button>
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-profile"/></svg></span><span class="tab__label">profile</span></button>
+            </nav>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">recipes active</span>
+          <div class="mobile mobile--flush" style="max-width:375px">
+            <nav class="tabbar tabbar--tight">
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-home"/></svg></span><span class="tab__label">home</span></button>
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-search"/></svg></span><span class="tab__label">search</span></button>
+              <button class="tab is-active" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-recipes"/></svg></span><span class="tab__label">recipes</span></button>
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-profile"/></svg></span><span class="tab__label">profile</span></button>
+            </nav>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">profile active</span>
+          <div class="mobile mobile--flush" style="max-width:375px">
+            <nav class="tabbar tabbar--tight">
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-home"/></svg></span><span class="tab__label">home</span></button>
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-search"/></svg></span><span class="tab__label">search</span></button>
+              <button class="tab" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-recipes"/></svg></span><span class="tab__label">recipes</span></button>
+              <button class="tab is-active" type="button"><span class="tab__icon"><svg class="icon"><use href="#i-profile"/></svg></span><span class="tab__label">profile</span></button>
+            </nav>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 16 · budget-left ===== -->
+  <section class="section" id="budget-left">
+    <div class="section__head"><span class="section__num">16</span><span class="section__name">budget-left</span></div>
+    <p class="section__intro">The focal point of home — what’s left for today, rounded, in ink. Over budget is shown just as calmly: still ink, never red. An invitation, not a verdict.</p>
+    <div class="section__body">
+      <div class="specimens">
+        <div class="spec"><span class="spec__label">under budget</span>
+          <div class="mobile">
+            <div class="budget">
+              <div class="budget__label">left for today</div>
+              <span class="estimate"><span class="estimate__value"><span class="estimate__approx">≈</span>1,150</span></span>
+              <div class="budget__context">of ≈ 1,650 today</div>
+            </div>
+          </div>
+        </div>
+        <div class="spec"><span class="spec__label">over budget (calm, never red)</span>
+          <div class="mobile">
+            <div class="budget">
+              <div class="budget__label">over by</div>
+              <span class="estimate"><span class="estimate__value"><span class="estimate__approx">≈</span>80</span></span>
+              <div class="budget__context">of ≈ 1,650 today</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 17 · why this fits you ===== -->
+  <section class="section" id="why-this-fits">
+    <div class="section__head"><span class="section__num">17</span><span class="section__name">why this fits you</span></div>
+    <p class="section__intro">Grounded reasons, never a sales pitch. Every claim is literally true against your remaining budget, diet, and allergens.</p>
+    <div class="section__body">
+      <div class="mobile">
+        <div class="why">
+          <h3 class="why__title">why this fits you</h3>
+          <div class="why__row">
+            <svg class="icon why__check" aria-hidden="true"><use href="#i-check"/></svg>
+            <span class="why__text"><b>within budget</b> — ≈ 500 of ≈ 1,150 left</span>
+          </div>
+          <div class="why__row">
+            <svg class="icon why__check" aria-hidden="true"><use href="#i-check"/></svg>
+            <span class="why__text"><b>matches your diet</b> — vegetarian</span>
+          </div>
+          <div class="why__row">
+            <svg class="icon why__check" aria-hidden="true"><use href="#i-check"/></svg>
+            <span class="why__text"><b>no allergens</b> — peanut-free</span>
+          </div>
+          <div class="macros">
+            <span class="macro-pill macro-pill--protein">protein ≈ 15g</span>
+            <span class="macro-pill macro-pill--carbs">carbs ≈ 75g</span>
+            <span class="macro-pill macro-pill--fat">fat ≈ 15g</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 18 · screen header ===== -->
+  <section class="section" id="screen-header">
+    <div class="section__head"><span class="section__num">18</span><span class="section__name">screen header</span></div>
+    <div class="section__body">
+      <div class="specimens">
+        <div class="spec"><span class="spec__label">title only</span>
+          <div class="mobile">
+            <div class="header"><h2 class="header__title">today</h2></div>
+          </div>
+        </div>
+        <div class="spec"><span class="spec__label">with back</span>
+          <div class="mobile">
+            <div class="header">
+              <button class="header__back" type="button" aria-label="back"><svg class="icon"><use href="#i-back"/></svg></button>
+              <h2 class="header__title">describe</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 19 · step indicator ===== -->
+  <section class="section" id="step-indicator">
+    <div class="section__head"><span class="section__num">19</span><span class="section__name">step indicator</span></div>
+    <p class="section__intro">Onboarding progress — goal, budget, diet, allergies.</p>
+    <div class="section__body">
+      <div class="steps" role="img" aria-label="step 2 of 4">
+        <span class="step-dot"></span>
+        <span class="step-dot step-dot--active"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 20 · basic field ===== -->
+  <section class="section" id="basic-field">
+    <div class="section__head"><span class="section__num">20</span><span class="section__name">basic field</span></div>
+    <p class="section__intro">A plain single-line field for the short inputs onboarding and profile need — chiefly the daily budget. Focus shows a calm neutral border (never tomato); keyboard users still get the ring.</p>
+    <div class="section__body">
+      <div class="specimens">
+        <div class="spec"><span class="spec__label">default</span>
+          <div class="mobile">
+            <div class="field">
+              <label class="field__label" for="budget-a">daily budget</label>
+              <input class="field__input" id="budget-a" type="text" inputmode="numeric" value="1,650">
+            </div>
+          </div>
+        </div>
+        <div class="spec"><span class="spec__label">focused</span>
+          <div class="mobile">
+            <div class="field">
+              <label class="field__label" for="budget-b">daily budget</label>
+              <input class="field__input is-focus" id="budget-b" type="text" inputmode="numeric" value="1,650">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 21 · toggle ===== -->
+  <section class="section" id="toggle">
+    <div class="section__head"><span class="section__num">21</span><span class="section__name">toggle</span></div>
+    <p class="section__intro">A real checkbox — it toggles and the knob slides on tap, no JavaScript. On uses tomato, the same active accent as a selected chip or the current tab.</p>
+    <div class="section__body">
+      <div class="specimens">
+        <div class="spec"><span class="spec__label">off · on</span>
+          <div class="spec__stage">
+            <label class="toggle"><input class="toggle__input" type="checkbox" aria-label="example setting, off"><span class="toggle__track"><span class="toggle__knob"></span></span></label>
+            <label class="toggle"><input class="toggle__input" type="checkbox" checked aria-label="example setting, on"><span class="toggle__track"><span class="toggle__knob"></span></span></label>
+          </div>
+        </div>
+        <div class="spec"><span class="spec__label">profile setting</span>
+          <div class="mobile">
+            <div class="setting-row">
+              <label class="setting-row__text" for="set-kj">
+                <span class="setting-row__label">use kilojoules</span>
+                <span class="setting-row__hint">kcal by default, kJ when on</span>
+              </label>
+              <label class="toggle"><input id="set-kj" class="toggle__input" type="checkbox"><span class="toggle__track"><span class="toggle__knob"></span></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 22 · choice card ===== -->
+  <section class="section" id="choice-card">
+    <div class="section__head"><span class="section__num">22</span><span class="section__name">choice card</span></div>
+    <p class="section__intro">A prominent single-select for onboarding — pick a goal, or an activity level (compact). A real radio group, so one choice clears the others with no JS. Selected gets an accent border and a faint tomato wash, not a full red fill; the label stays ink.</p>
+    <div class="section__body">
+      <div class="specimens">
+
+        <div class="spec"><span class="spec__label">goal · default + selected</span>
+          <div class="mobile">
+            <div class="choice-stack">
+              <label class="choice-card"><input class="choice-card__input" type="radio" name="goal-demo"><span class="choice-card__surface"><span class="choice-card__label">lose a little</span><svg class="icon choice-card__check" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+              <label class="choice-card"><input class="choice-card__input" type="radio" name="goal-demo" checked><span class="choice-card__surface"><span class="choice-card__label">stay steady</span><svg class="icon choice-card__check" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+              <label class="choice-card"><input class="choice-card__input" type="radio" name="goal-demo"><span class="choice-card__surface"><span class="choice-card__label">gain a little</span><svg class="icon choice-card__check" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">pressed</span>
+          <div class="mobile">
+            <!-- static specimen (no radio) so it shows default + pressed only and can't latch to selected -->
+            <div class="choice-card is-pressed"><span class="choice-card__surface"><span class="choice-card__label">lose a little</span><svg class="icon choice-card__check" aria-hidden="true"><use href="#i-check"/></svg></span></div>
+          </div>
+        </div>
+
+        <div class="spec"><span class="spec__label">compact · activity level</span>
+          <div class="mobile">
+            <div class="choice-stack">
+              <label class="choice-card choice-card--compact"><input class="choice-card__input" type="radio" name="activity-demo"><span class="choice-card__surface"><span class="choice-card__label">mostly sitting</span><svg class="icon choice-card__check" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+              <label class="choice-card choice-card--compact"><input class="choice-card__input" type="radio" name="activity-demo" checked><span class="choice-card__surface"><span class="choice-card__label">lightly active</span><svg class="icon choice-card__check" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+              <label class="choice-card choice-card--compact"><input class="choice-card__input" type="radio" name="activity-demo"><span class="choice-card__surface"><span class="choice-card__label">very active</span><svg class="icon choice-card__check" aria-hidden="true"><use href="#i-check"/></svg></span></label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 23 · macro pill ===== -->
+  <section class="section" id="macro-pill">
+    <div class="section__head"><span class="section__num">23</span><span class="section__name">macro pill</span></div>
+    <p class="section__intro">A display-only pill for a single macro value. Shown in a row of three — protein · carbs · fat — as the day's tally. Each macro has its own tinted fill and accent text colour drawn from the design-system palette: tomato for protein, focaccia for carbs, arugula for fat. Not interactive — reads as information, never a target or a progress indicator.</p>
+    <div class="section__body">
+      <div class="specimens">
+        <div class="spec"><span class="spec__label">day's macro tally</span>
+          <div class="spec__stage macros">
+            <span class="macro-pill macro-pill--protein">protein ≈ 60g</span>
+            <span class="macro-pill macro-pill--carbs">carbs ≈ 140g</span>
+            <span class="macro-pill macro-pill--fat">fat ≈ 45g</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 24 · picker ===== -->
+  <section class="section" id="picker">
+    <div class="section__head"><span class="section__num">24</span><span class="section__name">picker</span></div>
+    <p class="section__intro">Age / weight / height — inline drum picker, one open at a time. Tapping a row expands a scroll-snap drum in place; the chevron rotates and the value turns tomato. The drum itself is wired in JS; this specimen is static markup showing the closed and open states.</p>
+    <div class="section__body">
+      <div class="specimens">
+
+        <div class="spec"><span class="spec__label">picker — age/weight/height, inline drum, one open at a time</span>
+          <div class="mobile">
+            <div class="picker">
+              <div class="picker__item is-open" data-key="age">
+                <button class="picker__row" type="button">
+                  <span class="picker__label">age</span>
+                  <span class="picker__value"><span class="picker__out">29</span>
+                    <svg class="icon picker__chev" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+                  </span>
+                </button>
+                <div class="picker__panel" style="max-height:180px">
+                  <div class="picker__band"></div>
+                  <div class="picker__drum" style="height:156px;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none">
+                    <div class="picker__list" style="padding-top:0">
+                      <div class="picker__opt">27</div>
+                      <div class="picker__opt">28</div>
+                      <div class="picker__opt is-current">29</div>
+                      <div class="picker__opt">30</div>
+                      <div class="picker__opt">31</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="picker__item" data-key="weightKg">
+                <button class="picker__row" type="button">
+                  <span class="picker__label">weight</span>
+                  <span class="picker__value"><span class="picker__out">62 kg</span>
+                    <svg class="icon picker__chev" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+                  </span>
+                </button>
+                <div class="picker__panel">
+                  <div class="picker__band"></div>
+                  <div class="picker__drum">
+                    <div class="picker__list">
+                      <div class="picker__opt is-current">62</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="picker__item" data-key="heightCm">
+                <button class="picker__row" type="button">
+                  <span class="picker__label">height</span>
+                  <span class="picker__value"><span class="picker__out">168 cm</span>
+                    <svg class="icon picker__chev" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+                  </span>
+                </button>
+                <div class="picker__panel">
+                  <div class="picker__band"></div>
+                  <div class="picker__drum">
+                    <div class="picker__list">
+                      <div class="picker__opt is-current">168</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== 25 · guidelines ===== -->
+  <section class="section" id="guidelines">
+    <div class="section__head"><span class="section__num">25</span><span class="section__name">guidelines</span></div>
+    <div class="section__body">
+      <div class="guidelines">
+        <div>
+          <h3 class="guideline__h">tomato is appetite, never alarm</h3>
+          <p class="guideline__p">The hero accent is for action, the wordmark, and today’s magnet. No state — over-budget, error, anything — ever turns red. Over budget reads calmly in ink (and a warm focaccia tint on recipes); the describe-input’s low-confidence state is a question mark and ink text, “didn’t quite catch that — redescribe?”</p>
+        </div>
+        <div>
+          <h3 class="guideline__h">numbers are ink, rounded, with ≈</h3>
+          <p class="guideline__p">Every calorie figure stays ink and is rounded to the nearest 50 (large meals to 100), always prefixed with ≈. Macros round to the nearest 5g and sit quietly beneath the calorie hero — never competing. The rounding is the honesty signal; no fake-precise integers anywhere.</p>
+        </div>
+        <div>
+          <h3 class="guideline__h">the voice</h3>
+          <p class="guideline__p">Lowercase, short, warm, curious. It never moralises, never labels food good or bad, and never uses debt language (“earned”, “make up for”). Balance is an invitation, and the friend speaks rarely — about once a day.</p>
+        </div>
+        <div>
+          <h3 class="guideline__h">the mark · favicon</h3>
+          <svg role="img" aria-label="Noted favicon" style="display:block;width:44px;height:48px;color:var(--accent-primary);margin:var(--space-8) 0"><use href="#tomato-o"/></svg>
+          <p class="guideline__p">The tomato ‘o’ from the wordmark — a red tomato body with an arugula calyx — stands alone as the app’s mark: the browser favicon and the home-screen icon. It is the only place the glyph appears without the letters. It ships as a vector (<code>assets/favicon.svg</code>) so it stays crisp at any size — tomato body, arugula calyx, on a transparent ground.</p>
+        </div>
+        <div>
+          <h3 class="guideline__h">accessibility</h3>
+          <p class="guideline__p">Interactive targets are at least 44px; 14px is the text floor; one tomato focus ring serves keyboard users. Every text element — labels, captions, timestamps, values, and wayfinding — is set in ink for AA contrast; muted is retained in the palette for hairlines, tracks, and affordance icons, but no longer used for text. (White-on-tomato measures ≈ 4.4:1 — essentially at the AA threshold for the 17px medium action labels; the tomato token is fixed by the brand.)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+
+  <!-- ===== colophon ===== -->
+  <footer class="colophon">
+    <span class="wordmark">N<svg class="tomato-o" role="img" aria-label="o"><use href="#tomato-o"/></svg>ted</span>
+    <p class="colophon__line">design system · light mode · 2026</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

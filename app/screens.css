@@ -1,0 +1,350 @@
+/* ==========================================================================
+   Noted — screens scaffolding
+   honest about what you ate.
+
+   SCREEN-LEVEL LAYOUT ONLY. This file lays out the mobile frame and the page
+   flow for the built screens. It is NOT part of the design system: it does not
+   define or restyle any component — those come from components.css, and every
+   value inside the product UI traces to tokens.css.
+
+   One deliberate boundary: the phone-frame *chrome* (bezel thickness, device
+   corner radius, status-bar height, the home indicator) uses a few device
+   dimensions that are not on the product's 8-pt token scale — exactly as the
+   styleguide's own page chrome does (its 80px swatch, 96px radius tile, clamp()
+   masthead). Chrome is presentation, not product. Everything the user actually
+   touches stays strictly on the tokens + components.
+   ========================================================================== */
+
+* { box-sizing: border-box; }
+
+html { background: var(--divider); }   /* warm-grey ground so the paper device reads as a device */
+
+body {
+  margin: 0;
+  height: 100vh;                       /* fixed to the viewport so the oversized (unscaled) device box can't grow the page */
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;                    /* the device scales to fit; its unscaled box is clipped, never scrolled */
+  padding: var(--space-24);
+  background: var(--divider);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--tint-tomato); }
+
+/* links in the screens are always buttons / cards / nav — adopt their styling,
+   never the default underline-blue */
+a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+img { max-width: 100%; }
+
+
+/* ----- the phone --------------------------------------------------------- */
+
+.phone {                               /* the device: a thin, light bezel */
+  display: inline-flex;
+  padding: 5px;                        /* device padding — device chrome */
+  background: var(--surface-card);     /* light device body */
+  border: 3px solid color-mix(in srgb, var(--divider) 86%, var(--ink) 14%);  /* thin bezel, a hair darker than the ground — device chrome */
+  border-radius: 44px;                 /* device corner — device chrome */
+  transform: scale(var(--phone-scale, 1));  /* screens.js scales the device to fit the window — device chrome */
+  transform-origin: center;
+}
+.phone__screen {                       /* the screen: the paper ground */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 390px;                        /* the product viewport (spec: ~390px) */
+  height: 844px;                       /* true phone height — never collapses to the viewport */
+  background: var(--surface-ground);
+  border-radius: 36px;                 /* screen corner (concentric with bezel) — device chrome */
+  overflow: hidden;
+}
+
+/* status bar — the iOS pattern, slim and in ink (device chrome):
+   time · a dynamic-island pill · signal / wifi / battery glyphs */
+.status-bar {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 var(--gutter);
+}
+.status-bar__time {
+  /* the OS clock reads as real iOS chrome — San Francisco, not Noted's Satoshi */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+/* the dynamic-island pill — truly centred on the screen, not just between */
+.status-bar__island {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78px;                         /* island size — device chrome */
+  height: 24px;
+  background: var(--ink);
+  border-radius: var(--radius-pill);
+}
+/* the right cluster — small ink glyphs */
+.status-bar__icons { display: inline-flex; align-items: center; gap: var(--space-4); }
+.status-bar__glyph { display: block; color: var(--ink); }
+
+/* home indicator — the one iconic phone cue at the bottom (device chrome) */
+.home-indicator { flex: none; height: 22px; display: flex; align-items: center; justify-content: center; }
+.home-indicator::after {
+  content: "";
+  width: 36%;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--text-primary);
+}
+/* On tab-bar screens the white runs to the bottom edge — the tab bar and the
+   home-indicator zone share one white surface (no paper strip beneath the bar).
+   Two selectors for two contexts:
+   - static .html screens: .tabbar and .home-indicator are adjacent siblings */
+.tabbar + .home-indicator { background: var(--surface-card); }
+/* - SPA: the tab bar lives inside #app, so router.js toggles this class instead */
+.home-indicator.on-tabbar { background: var(--surface-card); }
+
+/* on a real phone, drop the bezel and go full-bleed (and never scale) */
+@media (max-width: 430px) {
+  body { padding: 0; overflow: auto; }
+  .phone { padding: 0; border: 0; border-radius: 0; background: none; transform: none; }
+  .phone__screen { width: 100vw; height: 100vh; border-radius: 0; }
+}
+
+
+/* ----- the scrolling screen body ----------------------------------------- */
+
+.screen {                              /* the scroll area between status bar and tab bar */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-32) var(--gutter) var(--gutter);
+}
+.screen--center {                      /* welcome: calm, centred, lots of paper */
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-32);
+  padding-bottom: var(--space-48);
+}
+
+/* the SPA mounts the active view here; it owns the scroll area between chrome */
+#app { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+#app > .screen { flex: 1; min-height: 0; }   /* a view may render its own .screen wrapper */
+
+/* a top content stack + a footer that sinks to the bottom of the screen */
+.screen__body { display: flex; flex-direction: column; gap: var(--space-16); }
+.screen__footer {
+  margin-top: auto;
+  padding-top: var(--space-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  align-items: stretch;
+}
+.screen__footer--center { align-items: center; }
+
+/* pinned top bar that hosts the back header on drill-down screens */
+.topbar { flex: none; padding: var(--space-32) var(--gutter) 0; }
+
+
+/* ----- small layout helpers (arranging components, not restyling them) ---- */
+
+.stack   { display: flex; flex-direction: column; gap: var(--space-16); }
+.group   { display: flex; flex-direction: column; gap: var(--space-8); }   /* tight: label + control, headline + subcopy */
+.choice-stack { display: flex; flex-direction: column; gap: var(--space-8); }
+.chip-group   { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.field-row { display: flex; gap: var(--space-16); }
+.field-row > .field { flex: 1; min-width: 0; }
+.spacer { flex: 1 1 auto; }
+.center-text { text-align: center; }
+.col-center { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-24); }
+
+/* onboarding step dots — centred at the top of the flow (goal / about-you /
+   your-budget / preferences are the only screens with .steps) */
+.steps { align-self: center; }
+
+/* onboarding headline + warm subcopy */
+.lede { font-size: var(--text-body); line-height: var(--leading-body); color: var(--text-primary); max-width: 32ch; }
+
+/* plain ingredient / step lists on the recipe detail (no system list component) */
+.list { margin: 0; padding-left: var(--space-24); display: flex; flex-direction: column; gap: var(--space-8); }
+.list li { font-size: var(--text-body); line-height: var(--leading-body); color: var(--text-primary); }
+.list li::marker { color: var(--text-primary); }
+
+
+/* ----- welcome wordmark -------------------------------------------------- */
+/* the wordmark is a logo lockup, sized as display chrome (the styleguide treats
+   it the same way — bespoke, not on the type scale). */
+.wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  font-weight: var(--weight-bold);
+  color: var(--accent-primary);
+  font-size: 68px;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+}
+.wordmark .tomato-o { width: 0.62em; height: 0.66em; }
+
+/* intro — a calmer, smaller lockup than the splash (still bespoke display chrome) */
+.wordmark--sm { font-size: 44px; }
+
+/* the wordmark settles in like a note onto the fridge — the sanctioned 200ms
+   ease-out, a small drop + the note's tilt resolving to upright */
+.wordmark--enter { animation: wordmark-settle var(--motion-duration) var(--motion-ease) both; }
+@keyframes wordmark-settle {
+  from { opacity: 0; transform: translateY(-8px) rotate(-2deg); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* splash → intro: the whole screen is one full-bleed tap target (skips the
+   2.5s meta-refresh auto-advance instantly). Sits above the centred content. */
+.splash-link { position: absolute; inset: 0; z-index: 5; }
+
+
+/* welcome (loading): a big tomato grows, then shrinks + fades into the wordmark's
+   OWN "o" (a real .tomato-o, placed by the wordmark layout — no magic seat
+   coordinates). The overlay simply dissolves as the resting wordmark fades in. */
+.welcome { position: relative; gap: var(--space-24); }
+.welcome__stage { position: relative; display: inline-flex; align-items: baseline; }
+/* resting wordmark (with its real tomato-o) — fades in as the overlay dissolves */
+.welcome__mark { opacity: 0; animation: welcome-fade-in 360ms var(--motion-ease) 560ms both; }
+/* the big animated overlay: fills the screen, shrinks toward the wordmark, fades out */
+.welcome__tomato {
+  position: absolute; left: 50%; top: 42%; color: var(--accent-primary);
+  width: 60vmin; height: 60vmin; transform: translate(-50%, -50%);
+  animation: welcome-grow 900ms var(--motion-ease) both;
+  pointer-events: none;
+}
+@keyframes welcome-grow {
+  0%   { width: 60vmin; height: 60vmin; opacity: 1; }
+  65%  { width: 96px;   height: 101px;  opacity: 1; }
+  100% { width: 44px;   height: 46px;   opacity: 0; }
+}
+@keyframes welcome-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.welcome__tag { opacity: 0; animation: welcome-fade-in 360ms var(--motion-ease) 760ms both; }
+@media (prefers-reduced-motion: reduce) {
+  .welcome__tomato { display: none; }
+  .welcome__mark, .welcome__tag { animation: none; opacity: 1; }
+}
+
+
+/* §2.3 placement — the daily macros line sits quietly under the budget context */
+.budget .macros { margin-top: var(--space-8); }
+/* the budget note holds its macros centred like the rest of the budget block */
+.card.budget .macros { justify-content: center; }
+
+
+/* ----- a small, quiet tomato-o mark beside a screen title (home / recipes) ------
+   ~brand presence at ~22px — must not compete with the title, so the gap tightens. */
+.header--brand { gap: var(--space-8); }
+/* tomato body fills with currentColor → tomato; the calyx keeps its baked-in arugula stroke */
+.title-mark { width: 22px; height: 22px; flex: none; color: var(--accent-primary); }
+
+
+/* home — the day's meals as a stack of notes. A single note or a collapsed pile
+   sits pinned at a slight angle (tomato magnet + −1.5° tilt, like today's note);
+   expanding a multi-meal stack straightens them into a plain, upright list. */
+.meal-stack-wrap { position: relative; transform: rotate(-1.5deg); }   /* sits on the screen's 16px rhythm — same as the nudge below, no extra top gap */
+.meal-stack-wrap:has(.meal-stack.is-expanded) { transform: none; }   /* expanded → flat list, no tilt */
+.meal-stack-wrap > .card__magnet { z-index: 9; }
+.card--meal { border: 1px solid var(--border-hairline); box-shadow: none; transform: none; }
+
+.meal-stack.is-collapsed { display: grid; }
+.meal-stack.is-collapsed > .card { grid-area: 1 / 1; transition: transform var(--motion-duration) var(--motion-ease); }
+.meal-stack.is-collapsed > .card:nth-child(1) { z-index: 3; }
+.meal-stack.is-collapsed > .card:nth-child(2) { z-index: 2; transform: translateY(13px) scale(.972); transform-origin: top center; }
+.meal-stack.is-collapsed > .card:nth-child(n+3) { z-index: 1; transform: translateY(26px) scale(.944); transform-origin: top center; }
+
+.meal-stack.is-expanded { display: flex; flex-direction: column; gap: var(--space-8); }
+.meal-stack.is-expanded > .card { animation: meal-rise var(--motion-duration) var(--motion-ease) both; }
+@keyframes meal-rise { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+.meal-stack__cue { display: block; width: 100%; margin-top: var(--space-16); padding: var(--space-8);
+  background: transparent; border: none; cursor: pointer; text-align: center;
+  font-family: var(--font-sans); font-size: var(--text-caption); color: var(--text-secondary); }
+
+
+/* ----- tap a number to reveal its range (CSS-only) ----------------------- */
+/* the home note's ≈ and the AI-result hero both use this: tap → the range
+   eases in (the component's range-reveal animation), the resting line hides. */
+.reveal { cursor: pointer; }
+.reveal__toggle { position: absolute; opacity: 0; pointer-events: none; }
+.reveal__revealed { display: none; }
+.reveal__toggle:checked ~ .reveal__resting  { display: none; }
+.reveal__toggle:checked ~ .reveal__revealed { display: block; }
+.reveal__toggle:focus-visible ~ .estimate__value { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+
+/* ----- your-budget: the number is the edit target (CSS-only, no JS) ------- */
+/* tap the ≈ number → a plain editable field; "save" → back to the rounded ≈.
+   the same "tap a number to act on it" gesture as the estimate range. */
+.budget-edit { display: flex; flex-direction: column; align-items: center; gap: var(--space-8); }
+.budget-edit__toggle { position: absolute; opacity: 0; pointer-events: none; }
+.budget-edit__display { cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-8); min-height: 44px; }
+.budget-edit__hint { font-size: var(--text-caption); color: var(--text-primary); }
+.budget-edit__field { display: none; flex-direction: column; gap: var(--space-16); width: 100%; max-width: 220px; }
+.budget-edit__toggle:checked ~ .budget-edit__display { display: none; }
+.budget-edit__toggle:checked ~ .budget-edit__field { display: flex; }
+/* keyboard focus on the hidden toggle lands its ring on the visible number */
+.budget-edit__toggle:focus-visible ~ .budget-edit__display { outline: 2px solid var(--focus-ring); outline-offset: 4px; border-radius: var(--radius-button); }
+
+
+/* ----- describe: helper caption above the text field ---------------------- */
+.describe__lead { color: var(--text-secondary); }
+
+
+/* ----- ai-result: tap the pencil to edit a row (3b glue) ------------------
+   the stepper + remove are hidden until the row is .is-editing; then the pencil
+   hides and they take its place. The pieces themselves are styled by components.css. */
+.food-row .stepper,
+.food-row .food-row__remove { display: none; }
+.food-row.is-editing .food-row__action { display: none; }
+.food-row.is-editing .stepper,
+.food-row.is-editing .food-row__remove { display: inline-flex; }
+
+
+/* home empty-state hint */
+.home__empty-hint { color: var(--text-secondary); }
+
+/* home meal stack — staggered reveal so expansion reads as "unfolding"
+   (guarded so the reduced-motion rule below wins cleanly, no specificity fight) */
+@media (prefers-reduced-motion: no-preference) {
+  .meal-stack.is-expanded > .card:nth-child(2) { animation-delay: 40ms; }
+  .meal-stack.is-expanded > .card:nth-child(3) { animation-delay: 80ms; }
+  .meal-stack.is-expanded > .card:nth-child(n+4) { animation-delay: 120ms; }
+}
+
+/* recipe detail — compact rows (req 8.1) */
+.screen--compact .screen__body { gap: var(--space-8); }
+.screen--compact .why { gap: var(--space-8); }
+.screen--compact .list { gap: var(--space-4); }
+/* icon hero for photo-less recipes — calm tint block, line-art centred */
+.recipe-hero--icon { display: flex; align-items: center; justify-content: center; }
+.recipe-hero--icon .icon { width: 56px; height: 56px; }
+.recipe-hero--arugula { background: var(--tint-arugula); color: var(--accent-fresh); }
+.recipe-hero--focaccia { background: var(--tint-focaccia); color: var(--accent-warm); }
+
+
+/* recipe feed — tighter rhythm between cards (req 7.1) */
+.feed { display: flex; flex-direction: column; gap: var(--space-8); }
+
+
+/* ----- reduced motion ---------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .wordmark--enter { animation: none; }
+  .meal-stack.is-expanded > .card { animation: none; }
+}

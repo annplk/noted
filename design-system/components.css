@@ -1,0 +1,1058 @@
+/* ==========================================================================
+   Noted — components
+   Built entirely from tokens.css. No raw hex / px where a token exists.
+   Pressed / focused / tinted variations use the derived tint & state-surface
+   tokens (defined in tokens.css), so every colour traces back to the palette.
+
+   States are exposed as modifier classes (.is-pressed, .is-focus, …) so the
+   styleguide can show every state as a static specimen — no JS required.
+   The live pseudo-classes (:active, :focus-visible) are wired too, so the
+   components still feel right when actually used.
+   ========================================================================== */
+
+/* ----- base + typography utilities --------------------------------------- */
+
+.ds {                       /* opt-in root for component styling */
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.txt-title {
+  font-size: var(--text-title);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+.txt-section {
+  font-size: var(--text-section);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+}
+.txt-body {
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-body);
+  color: var(--text-primary);
+}
+.txt-caption {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-snug);
+  color: var(--text-primary);     /* captions are ink; kept quiet by size, not contrast */
+}
+.txt-voice {                /* the friend's voice — italic, lowercase, indented */
+  font-size: var(--text-voice);
+  font-weight: var(--weight-regular);
+  font-style: italic;
+  line-height: var(--leading-snug);
+  text-transform: lowercase;
+  color: var(--text-primary);
+  padding-left: var(--space-16);
+  border-left: 2px solid var(--accent-fresh);
+}
+.txt-voice--fresh { color: var(--accent-fresh); }  /* nudge copy */
+
+
+/* ----- one shared focus ring --------------------------------------------- */
+
+.ds :focus-visible,
+.is-focus {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+
+/* ----- icons ------------------------------------------------------------- */
+
+.icon {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  flex: none;
+  /* single-stroke line-art — these inherited props cross the <use> boundary
+     into the sprite symbols, so every icon draws as a 2px stroked outline */
+  color: var(--text-primary);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.icon--food { width: 28px; height: 28px; }   /* decorative set runs a touch larger */
+.icon--fresh { color: var(--accent-fresh); }
+.icon--accent { color: var(--accent-primary); }
+
+
+/* ==========================================================================
+   1. BUTTON
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  min-height: 44px;                 /* touch target */
+  padding: 0 var(--space-24);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-button);
+  font-family: var(--font-sans);
+  font-size: var(--text-button);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--motion-duration) var(--motion-ease),
+              transform var(--motion-duration) var(--motion-ease);
+}
+
+/* primary — filled tomato */
+.btn--primary {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+.btn--primary:active,
+.btn--primary.is-pressed {
+  background: var(--tomato-pressed);
+  transform: translateY(1px);
+}
+
+/* secondary — quiet neutral outline */
+.btn--secondary {
+  background: transparent;
+  border-color: var(--border-interactive);
+  color: var(--text-primary);
+}
+.btn--secondary:active,
+.btn--secondary.is-pressed {
+  background: var(--surface-pressed);
+  transform: translateY(1px);
+}
+
+/* text / link — no container */
+.btn--text {
+  background: transparent;
+  border-color: transparent;
+  color: var(--accent-primary);
+  padding: 0 var(--space-8);
+}
+.btn--text:active,
+.btn--text.is-pressed {
+  color: var(--tomato-pressed);
+}
+
+/* disabled — calm, never red (disabled text is WCAG-exempt from contrast) */
+.btn:disabled,
+.btn.is-disabled {
+  background: var(--divider);
+  border-color: transparent;
+  color: var(--muted);
+  cursor: not-allowed;
+  transform: none;
+}
+.btn--text:disabled,
+.btn--text.is-disabled {
+  background: transparent;
+  color: var(--muted);
+}
+
+/* block — full-width primary CTA (the standard mobile action) */
+.btn--block { display: flex; width: 100%; }
+
+
+/* ==========================================================================
+   2. CHIP (pill) — diet / allergy picker + recipe filters
+   ========================================================================== */
+
+.chip {
+  position: relative;               /* anchors the ≥44px tap area */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: 34px;                 /* visibly lighter than a 44px button… */
+  padding: 0 var(--space-16);
+  border: 1.5px solid var(--border-interactive);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--motion-duration) var(--motion-ease),
+              border-color var(--motion-duration) var(--motion-ease);
+}
+.chip::after {                      /* …while the touch target stays ≥44px */
+  content: "";
+  position: absolute;
+  inset: -5px 0;
+}
+.chip .icon { width: 16px; height: 16px; }
+
+.chip--selected,
+.chip.is-selected {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+.chip--selected .icon,
+.chip.is-selected .icon { color: var(--text-on-accent); }   /* white check, matching the label */
+
+/* interactive chip: a <label> wrapping a hidden .chip__input + a .chip__check icon.
+   :checked drives the selected state; radios sharing a name single-select. No JS. */
+.chip__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.chip__input:focus-visible { outline: none; }    /* focus ring surfaces on .chip via :has() below */
+.chip__check { display: none; }                  /* hidden by default; appears only when :checked */
+.chip:has(.chip__input:checked) {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+.chip:has(.chip__input:checked) .icon { color: var(--text-on-accent); }
+.chip:has(.chip__input:checked) .chip__check { display: inline-block; }
+.chip:has(.chip__input:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* add / concept chip — ghost dashed "+", never fills, non-committal (a placeholder
+   affordance). Sits at the end of a chip group; tapping does nothing by design. */
+.chip--add {
+  border-style: dashed;
+  border-color: var(--border-interactive);
+  color: var(--text-secondary);
+  cursor: default;
+}
+.chip--add .icon { width: 16px; height: 16px; color: var(--text-secondary); }
+
+
+/* ==========================================================================
+   2b. MACRO PILL — display-only tally; protein · carbs · fat
+   ========================================================================== */
+
+.macro-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-4) var(--space-8);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.macro-pill--protein {
+  background: var(--tint-tomato);
+  color: var(--text-primary);
+  border-color: var(--tint-tomato);
+}
+
+.macro-pill--carbs {
+  background: var(--tint-focaccia);
+  color: var(--text-primary);
+  border-color: var(--tint-focaccia);
+}
+
+.macro-pill--fat {
+  background: var(--tint-arugula);
+  color: var(--text-primary);
+  border-color: var(--tint-arugula);
+}
+
+
+/* ==========================================================================
+   3. DESCRIBE-INPUT — the meal-description field
+   ========================================================================== */
+
+/* compact resting bar — lives on home */
+.describe {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  width: 100%;
+  min-height: 52px;
+  padding: 0 var(--space-16);
+  background: var(--surface-card);
+  border: 1.5px solid var(--border-hairline);
+  border-radius: var(--radius-input);
+}
+.describe__input {                 /* real single-line field in the resting bar */
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+}
+/* calm neutral focus border on the whole field (mouse + keyboard) */
+.describe:focus-within { border-color: var(--border-interactive); }
+.describe__icon {                  /* mic / affordance button */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-right: calc(var(--space-8) * -1);
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+/* helper lead caption above the field */
+.describe__lead {
+  font-size: var(--text-caption);
+  color: var(--text-secondary);
+  line-height: var(--leading-snug);
+  margin: 0 0 var(--space-8);
+}
+
+/* expanded multiline — lives on the log screen */
+.describe--expanded {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  min-height: auto;
+}
+.describe__field {
+  width: 100%;
+  min-height: 88px;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  resize: none;
+}
+/* placeholders fall back to the UA default — kept out of the muted token */
+/* focus shows ONLY the calm neutral border on the container (below) — never
+   tomato. For text fields :focus-visible also matches on mouse, so a tomato
+   outline would leak onto a click and read like an error; we suppress it. */
+.describe__field:focus, .describe__input:focus,
+.describe__field:focus-visible, .describe__input:focus-visible { outline: none; }
+
+.describe__tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--border-hairline);
+}
+.describe__tools .describe__icon { margin: 0; }
+.describe__tools-spacer { flex: 1; }
+
+/* focused — calm: a quiet neutral border only. The keyboard ring lives on the
+   real field via :focus-visible, so the specimen never flashes a tomato outline */
+.describe--expanded.is-focus {
+  border-color: var(--border-interactive);
+  outline: none;
+}
+
+/* error / low-confidence — calm, NEVER red: neutral border, a question-mark,
+   ink text. The honesty thesis, made literal. */
+.describe--error {
+  border-color: var(--border-interactive);
+}
+.describe__hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: var(--text-caption);
+  line-height: var(--leading-snug);
+  color: var(--text-primary);
+}
+.describe__hint .icon { width: 18px; height: 18px; }
+
+
+/* ==========================================================================
+   4. ESTIMATE DISPLAY — the ≈ number; range hides behind a tap
+   ========================================================================== */
+
+.estimate { display: inline-flex; flex-direction: column; gap: var(--space-4); }
+
+.estimate__value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.12em;
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);         /* numbers always ink */
+  line-height: var(--leading-solid);
+  letter-spacing: -0.02em;
+}
+.estimate__approx {                    /* the ≈ qualifier — ink, subordinate by size */
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  font-size: 0.55em;
+  transform: translateY(-0.12em);
+}
+.estimate--hero   .estimate__value { font-size: var(--text-estimate-hero); }
+.estimate--inline .estimate__value { font-size: var(--text-estimate-inline); }
+
+.estimate__range {
+  font-size: var(--text-caption);
+  color: var(--text-primary);
+}
+/* the revealed range eases in (one of the three sanctioned motions) */
+.estimate__range--revealed {
+  animation: range-reveal var(--motion-duration) var(--motion-ease) both;
+}
+@keyframes range-reveal {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* macros — row of coloured pills under the calorie hero */
+.macros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+
+/* ==========================================================================
+   5. FOOD-ITEM ROW — tappable evidence; reused for search results
+   ========================================================================== */
+
+.food-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-4) var(--space-8);   /* tighter rows */
+  border-bottom: 1px solid var(--border-hairline);
+  background: transparent;
+  cursor: pointer;
+}
+.food-row:last-child { border-bottom: none; }
+
+.food-row__body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.food-row__name {
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);          /* name is primary */
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+}
+.food-row__meta {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);         /* quantity is lighter */
+  color: var(--text-primary);
+  margin-top: 0;
+}
+.food-row__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  color: var(--muted);              /* affordance icon (non-text) */
+  cursor: pointer;
+}
+
+/* rows read as a divided list, not buttons: the 1px hairline is the only separator,
+   and a tap changes no background (no fill, hairline kept). */
+
+/* editing — the row body is inert: no pointer, so it doesn't read as a tap target.
+   Only the −/+ stepper and × stay interactive (their own cursor + :active feedback). */
+.food-row.is-editing { cursor: default; }
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+.stepper__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid var(--border-interactive);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.stepper__btn:active {                /* tapped — same faint whisper as a pressed card/button */
+  background: var(--surface-pressed);
+}
+.stepper__value {
+  min-width: 2ch;
+  text-align: center;
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+}
+.food-row__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  color: var(--muted);              /* affordance icon (non-text) */
+  cursor: pointer;
+}
+
+/* evidence variant — items shown as proof on the AI-result screen, NOT tappable.
+   The row is inert; only its pencil (.food-row__action) is interactive. Dividers are
+   the same system hairline as every other food row. */
+.food-row--evidence { cursor: default; }
+
+
+/* ==========================================================================
+   6. NOTE CARD — white note on the paper ground
+   ========================================================================== */
+
+.card {
+  position: relative;
+  width: 100%;
+  background: var(--surface-card);
+  border-radius: var(--radius-card);
+  padding: var(--space-24);
+}
+.card__label {
+  font-size: var(--text-caption);
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+.card__meal {
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  margin-top: var(--space-8);
+}
+.card .estimate { margin-top: var(--space-8); }
+.card__rule {
+  height: 1px;
+  background: var(--border-hairline);
+  margin: var(--space-16) 0;
+}
+.card__items {
+  font-size: var(--text-caption);
+  color: var(--text-primary);
+}
+
+/* today — the only tilted + shadowed element */
+.card--today {
+  box-shadow: var(--shadow-note);
+  transform: rotate(-1.5deg);
+  animation: note-settle var(--motion-duration) var(--motion-ease) both;
+}
+@keyframes note-settle {
+  from { transform: rotate(-1.5deg) translateY(-6px); opacity: 0; }
+  to   { transform: rotate(-1.5deg) translateY(0);    opacity: 1; }
+}
+.card__magnet {                    /* flat dot, no extra shadow — colour set by modifier */
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-primary);  /* default: tomato (today's note) */
+}
+.card__magnet--arugula { background: var(--accent-fresh); }   /* friend's nudge — arugula dot */
+
+/* history — upright, aligned, flat, no magnet */
+.card--history {
+  transform: none;
+  box-shadow: none;
+}
+
+/* friend's nudge — arugula magnet, +1.5° (opposite to today's −1.5°), same soft lift */
+.card--nudge {
+  display: flex;
+  flex-direction: row;            /* leaf leads the line — icon + text as one unit */
+  align-items: center;
+  gap: var(--space-8);
+  box-shadow: var(--shadow-note);
+  transform: rotate(1.5deg);
+  animation: nudge-in var(--motion-duration) var(--motion-ease) both;
+}
+.card--nudge .txt-voice {         /* the leaf is the lead-in now, so drop the indent rule */
+  border-left: none;
+  padding-left: 0;
+}
+@keyframes nudge-in {
+  from { opacity: 0; transform: rotate(1.5deg) translateY(6px); }
+  to   { opacity: 1; transform: rotate(1.5deg); }
+}
+
+
+/* ==========================================================================
+   7. RECIPE CARD — feed item; lighter than a note card
+   ========================================================================== */
+
+.recipe-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  width: 100%;
+  padding: var(--space-16);
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+}
+.recipe-card__marker {            /* small image area — line-art on an arugula tint */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  flex: none;
+  border-radius: var(--radius-button);
+  background: var(--tint-arugula);
+  color: var(--accent-fresh);
+}
+.recipe-card__marker .icon { width: 32px; height: 32px; }
+.recipe-card__body { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.recipe-card__title {
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+}
+.recipe-card__meta {
+  font-size: var(--text-caption);
+  color: var(--text-primary);
+  margin-top: 2px;
+}
+.recipe-card__pill {              /* "in budget" — arugula tint + ink text + green check */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-pill);
+  background: var(--tint-arugula);
+  color: var(--text-primary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+}
+.recipe-card__pill .icon { color: var(--accent-fresh); }   /* check icon stays arugula green */
+.recipe-card__kcal { color: var(--text-primary); }   /* the calorie number stays ink */
+.recipe-card__pill--over {        /* over budget — calm, warm focaccia tint, NEVER red */
+  background: var(--tint-focaccia);
+  color: var(--text-primary);     /* ink text (focaccia fails AA for text) */
+}
+.recipe-card:active,
+.recipe-card.is-pressed {
+  background: var(--surface-pressed);
+}
+
+/* §2 ADDITION — recipe photography. The one deliberate split: recipes use
+   photos; every other illustration stays line-art. Two pieces, both token-only.
+   The arugula tint already backs the marker (and backs the hero below), so a
+   missing image degrades to a calm green placeholder block — never red. */
+
+/* (a) photo thumbnail — a photo fills the existing 64px marker slot */
+.recipe-card__marker--photo {
+  overflow: hidden;
+  padding: 0;                       /* photo runs edge-to-edge inside the slot */
+}
+.recipe-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;                /* fill the square, no distortion */
+  display: block;
+}
+
+/* (b) recipe-detail header photo — spans the content width, rounded like a card */
+.recipe-hero {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--tint-arugula);  /* calm placeholder if the photo is missing */
+}
+.recipe-hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* icon marker colour variants — for photo-less feed cards (max 2, scattered).
+   --arugula matches the base marker, made explicit so the feed's emitted class isn't a no-op. */
+.recipe-card__marker--arugula  { background: var(--tint-arugula);  color: var(--accent-fresh); }
+.recipe-card__marker--focaccia { background: var(--tint-focaccia); color: var(--accent-warm); }
+
+
+/* ==========================================================================
+   8. TAB BAR — Home · Recipes · Profile
+   ========================================================================== */
+
+.tabbar {
+  display: flex;
+  width: 100%;
+  background: var(--surface-card);
+  border-top: 1px solid var(--border-hairline);
+}
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 56px;
+  padding: var(--space-8) 0;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);       /* inactive — ink (active is tomato) */
+  cursor: pointer;
+}
+.tab__label {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+}
+.tab .icon { color: inherit; }       /* icon follows the tab's colour, not ink */
+.tab__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-pill);
+}
+.tabbar--tight .tab__icon { padding: 3px var(--space-8); }
+.tab--active,
+.tab.is-active {
+  color: var(--accent-primary);      /* active — icon AND label both tomato */
+}
+.tab--active .tab__icon,
+.tab.is-active .tab__icon {
+  background: var(--tint-tomato);   /* soft tinted nest behind the active icon */
+}
+
+
+/* ==========================================================================
+   9. BUDGET-LEFT DISPLAY — the focal point of home
+   ========================================================================== */
+
+.budget { text-align: center; }
+.budget__label {
+  font-size: var(--text-caption);
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+.budget .estimate { align-items: center; margin-top: var(--space-8); }
+.budget .estimate__value { font-size: var(--text-estimate-hero); }
+.budget__context {                  /* quiet context so "left" has meaning */
+  font-size: var(--text-caption);
+  color: var(--text-primary);
+  margin-top: var(--space-8);
+}
+/* over budget — the budget block stays calm: white ground, ink number, "over by"
+   label. No colour change (no focaccia wash), never red — an invitation, not a verdict. */
+
+
+/* ==========================================================================
+   10. "WHY THIS FITS YOU" — grounded check rows
+   ========================================================================== */
+
+.why { display: flex; flex-direction: column; gap: var(--space-16); }
+.why__title {
+  font-size: var(--text-section);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+}
+.why__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+}
+.why__check {
+  flex: none;
+  color: var(--accent-fresh);        /* arugula check */
+}
+.why__text {
+  font-size: var(--text-body);
+  line-height: var(--leading-snug);
+  color: var(--text-primary);     /* all of it ink — including the numbers */
+}
+.why__text b { font-weight: var(--weight-medium); }
+
+
+/* ==========================================================================
+   11. SCREEN HEADER — title (+ optional back); lightweight
+   ========================================================================== */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  width: 100%;
+  min-height: 44px;
+}
+.header__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-left: calc(var(--space-8) * -1);
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.header__title {
+  font-size: var(--text-title);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+
+/* ==========================================================================
+   12. ONBOARDING STEP INDICATOR — small dots
+   ========================================================================== */
+
+.steps { display: inline-flex; align-items: center; gap: var(--space-8); }
+.step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--border-interactive);
+  transition: width var(--motion-duration) var(--motion-ease);
+}
+.step-dot--active {
+  width: 22px;
+  background: var(--accent-primary);
+}
+
+
+/* ==========================================================================
+   13. BASIC FIELD — single-line text / number input (budget, short text)
+   ========================================================================== */
+
+.field { display: flex; flex-direction: column; gap: var(--space-8); }
+.field__label {
+  font-size: var(--text-caption);
+  color: var(--text-primary);
+}
+.field__input {
+  width: 100%;
+  min-height: 48px;                 /* comfortable touch target */
+  padding: 0 var(--space-16);
+  background: var(--surface-card);
+  border: 1.5px solid var(--border-hairline);
+  border-radius: var(--radius-input);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  color: var(--text-primary);
+}
+/* focus: calm neutral border only — NEVER tomato. (:focus-visible also matches on
+   mouse for text fields, so a tomato outline would leak onto a click; the neutral
+   border is the focus indicator for both mouse and keyboard here.) */
+.field__input:focus,
+.field__input:focus-visible { outline: none; border-color: var(--border-interactive); }
+.field__input.is-focus { border-color: var(--border-interactive); outline: none; }
+
+
+/* ==========================================================================
+   14. TOGGLE — on / off switch (+ a settings row to host it)
+   ========================================================================== */
+
+.toggle {                           /* a <label> wrapping a real checkbox — no JS */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  padding: var(--space-8) 0;        /* grows the tap target to ≥44px */
+  cursor: pointer;
+}
+.toggle__input {                    /* the real checkbox: hidden, still focusable */
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.toggle__track {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  background: var(--border-interactive);   /* off — neutral track */
+  transition: background-color var(--motion-duration) var(--motion-ease);
+}
+.toggle__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  transition: transform var(--motion-duration) var(--motion-ease);
+}
+.toggle__input:checked ~ .toggle__track { background: var(--accent-primary); }   /* on — tomato */
+.toggle__input:checked ~ .toggle__track .toggle__knob { transform: translateX(20px); }
+.toggle__input:focus-visible ~ .toggle__track {   /* keyboard focus ring */
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-8) 0;
+}
+.setting-row__text { display: flex; flex-direction: column; gap: 2px; }
+.setting-row__label { font-size: var(--text-body); color: var(--text-primary); }
+.setting-row__hint { font-size: var(--text-caption); color: var(--text-primary); }
+
+
+/* ==========================================================================
+   15. CHOICE CARD — prominent single-select (onboarding goal / activity)
+   A <label> wrapping a real <input type="radio"> (same pattern as the toggle).
+   :checked drives the selected styling; radios sharing a name single-select. No JS.
+   ========================================================================== */
+
+.choice-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+.choice-card__input {               /* the real radio: hidden, still focusable */
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.choice-card__surface {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-16) var(--space-24);     /* tightened vertical (was --space-24) — calmer, tidier goal cards */
+  background: var(--surface-card);
+  border: 1.5px solid var(--border-hairline);  /* resting edge reserves the space — no shift on select */
+  border-radius: var(--radius-card);
+}
+.choice-card__icon { flex: none; color: var(--text-primary); }   /* optional leading line-art */
+.choice-card__label {
+  flex: 1;
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);       /* label stays ink, selected or not */
+}
+.choice-card__check {
+  flex: none;
+  color: var(--accent-primary);     /* tomato check */
+  opacity: 0;                       /* space reserved; revealed only when selected — no shift */
+}
+
+/* selected — accent border + faint tomato wash + the check. NOT a full tomato
+   fill: at card size that reads as a red block and breaks "accent, never alarm". */
+.choice-card__input:checked ~ .choice-card__surface,
+.choice-card.is-selected .choice-card__surface {
+  border-color: var(--accent-primary);
+  background: var(--tint-tomato);
+}
+.choice-card__input:checked ~ .choice-card__surface .choice-card__check,
+.choice-card.is-selected .choice-card__check { opacity: 1; }
+
+/* pressed — the same faint whisper as a pressed row/card */
+.choice-card__input:active ~ .choice-card__surface,
+.choice-card.is-pressed .choice-card__surface {
+  background: var(--surface-pressed);
+}
+
+/* focus — shared tomato ring on keyboard only (:focus-visible on the radio,
+   never on mouse press; radios aren't text fields, so it stays keyboard-only) */
+.choice-card__input:focus-visible ~ .choice-card__surface {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* compact — activity level */
+.choice-card--compact .choice-card__surface {
+  padding: var(--space-16);
+  min-height: 44px;
+}
+
+
+/* ==========================================================================
+   16. PICKER — HIG inline value picker (about-you: age / weight / height)
+   Rows that expand a scroll-snap drum in place; one open at a time. The drum
+   itself is wired in JS; this is the static structure + all visual states.
+   ========================================================================== */
+.picker { background: var(--surface-card); border: 1.5px solid var(--border-hairline); border-radius: var(--radius-card); overflow: hidden; }
+.picker__row {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; min-height: 56px; padding: 0 var(--space-16);
+  background: transparent; border: none; cursor: pointer;
+  font-family: var(--font-sans); font-size: var(--text-body); color: var(--text-primary);
+}
+/* hairline between rows (always) + between an open row and its drum.
+   Scope the row↔drum line to the OPEN item only: a collapsed panel (max-height:0) still
+   renders its border, which doubles up with the next row's hairline — a 2px line on closed
+   rows. Only the open panel needs the separator, so closed and open dividers match at 1px. */
+.picker__item + .picker__item .picker__row,
+.picker__item.is-open .picker__panel { border-top: 1px solid var(--border-hairline); }
+.picker__label { font-weight: var(--weight-medium); }
+.picker__value { display: inline-flex; align-items: center; gap: var(--space-8); font-weight: var(--weight-medium); }
+.picker__chev { color: var(--text-secondary); transition: transform var(--motion-duration) var(--motion-ease); }
+.picker__item.is-open .picker__value { color: var(--accent-primary); }
+.picker__item.is-open .picker__chev { transform: rotate(180deg); color: var(--accent-primary); }
+.picker__panel { position: relative; max-height: 0; overflow: hidden; transition: max-height var(--motion-duration) var(--motion-ease); }
+.picker__item.is-open .picker__panel { max-height: 180px; }
+/* the drum scrolls; z-index keeps the values above the highlight band (which lives in
+   the panel, NOT the drum, so it stays pinned to the centre instead of scrolling away) */
+.picker__drum { position: relative; z-index: 1; height: 156px; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; }
+.picker__drum::-webkit-scrollbar { display: none; }
+/* iOS-style selection highlight — a full-width rounded fill (no border lines) behind
+   the centred value; small side inset, large pill rounding. */
+.picker__band { position: absolute; left: var(--space-8); right: var(--space-8); top: 50%; transform: translateY(-50%); height: 44px;
+  border-radius: var(--radius-pill); background: var(--surface-pressed);
+  z-index: 0; pointer-events: none; }
+.picker__list { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; padding: 56px 0; }
+.picker__opt { height: 32px; line-height: 32px; font-size: var(--text-body); color: var(--text-primary); scroll-snap-align: center; }
+.picker__opt.is-current { font-size: var(--text-section); font-weight: var(--weight-bold); }
+.picker__row:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .picker__panel, .picker__chev { transition: none; } }
+
+
+/* ----- respect reduced motion -------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .card--today,
+  .card--nudge,
+  .estimate__range--revealed,
+  .step-dot,
+  .toggle__track,
+  .toggle__knob,
+  .btn,
+  .chip { animation: none; transition: none; }
+}

@@ -1,0 +1,103 @@
+/* ==========================================================================
+   Noted — design tokens
+   honest about what you ate.
+
+   Two tiers:
+     1. PRIMITIVES — the raw brand values (exact spec hexes, the 8-pt scale).
+     2. SEMANTIC   — role aliases that point at primitives. This is the only
+                     layer a future dark mode would re-map; nothing else needs
+                     to change. (Dark mode is intentionally NOT built.)
+
+   Components consume the SEMANTIC layer wherever a role exists.
+   ========================================================================== */
+
+:root {
+
+  /* ----- 1. PRIMITIVES ---------------------------------------------------- */
+
+  /* colour — the fixed brand palette */
+  --paper:      #F9F7F3;  /* app background / ground          */
+  --note-white: #FFFFFF;  /* card surface                     */
+  --ink:        #2B2722;  /* text, numbers, illustration strokes */
+  --tomato:     #D14A33;  /* hero accent — appetite, NEVER alarm */
+  --arugula:    #4F7135;  /* fresh / recipes accent           */
+  --focaccia:   #DFA64A;  /* warm secondary accent            */
+  --muted:      #8A8276;  /* secondary labels, captions       */
+  --divider:    #E7E4DD;  /* hairlines / row separators       */
+
+  /* type — Satoshi only; Inter / system fallback */
+  --font-sans: 'Satoshi', 'Inter', system-ui, sans-serif;
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-bold:    700;
+
+  /* font sizes — fixed px to match the mobile spec; 14px is the floor */
+  --text-estimate-hero:   40px;  /* AI-result specimen only       */
+  --text-estimate-inline: 28px;  /* the number on note cards      */
+  --text-title:           28px;  /* screen title                  */
+  --text-section:         20px;  /* section heading               */
+  --text-button:          17px;  /* button label                  */
+  --text-body:            16px;  /* body / ui                     */
+  --text-voice:           16px;  /* friend voice (italic)         */
+  --text-caption:         14px;  /* captions, labels, timestamps  */
+
+  --leading-solid: 1;      /* big numbers          */
+  --leading-tight: 1.15;   /* titles               */
+  --leading-body:  1.5;    /* body copy            */
+  --leading-snug:  1.4;    /* captions, voice      */
+
+  /* spacing — pure 8-pt scale, named by value */
+  --space-2:   2px;
+  --space-4:   4px;
+  --space-8:   8px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --gutter:   var(--space-24);  /* screen gutters */
+
+  /* radii */
+  --radius-card:   14px;  /* cards + inputs */
+  --radius-input:  14px;
+  --radius-button: 12px;
+  --radius-pill:  999px;  /* chips */
+
+  /* elevation — ONE soft, low shadow. Applied only to today's note card. */
+  --shadow-note: 0 10px 28px -12px rgba(43, 39, 34, 0.20);
+
+  /* motion — ONE duration + ONE easing (ease-out). Used sparingly. */
+  --motion-duration: 200ms;
+  --motion-ease: cubic-bezier(0.2, 0.7, 0.2, 1);  /* ease-out */
+
+
+  /* ----- 2. SEMANTIC (role aliases — the dark-mode swap layer) ------------ */
+
+  --surface-ground:    var(--paper);       /* the page / fridge ground   */
+  --surface-card:      var(--note-white);  /* notes, recipe cards        */
+
+  --text-primary:      var(--ink);         /* all text + all numbers     */
+  --text-secondary:    var(--muted);       /* labels, captions           */
+  --text-on-accent:    var(--note-white);  /* text on a tomato fill      */
+
+  --accent-primary:    var(--tomato);      /* primary action, magnet, wordmark */
+  --accent-fresh:      var(--arugula);     /* recipes, the friend's voice */
+  --accent-warm:       var(--focaccia);    /* warm secondary accent      */
+
+  --border-hairline:   var(--divider);     /* dividers, row separators   */
+  --border-interactive: var(--muted);      /* outlined controls          */
+
+  --focus-ring:        var(--tomato);      /* one keyboard focus colour  */
+
+
+  /* ----- 3. DERIVED — tints & state surfaces -------------------------------
+     Every working colour the UI uses beyond the seven bases + divider lives
+     here, each tied to a base via color-mix so it follows if the base changes.
+     No improvised one-off values anywhere else in the system. */
+  --surface-pressed: color-mix(in srgb, var(--ink) 3%, var(--paper));            /* pressed rows + cards (a whisper), quiet button press */
+  --tomato-pressed:  color-mix(in srgb, var(--tomato) 86%, var(--ink));          /* tomato fill / link, pressed */
+  --tint-arugula:    color-mix(in srgb, var(--arugula) 14%, var(--note-white));  /* "in budget" pill, recipe marker */
+  --tint-focaccia:   color-mix(in srgb, var(--focaccia) 18%, var(--note-white)); /* "over budget" pill */
+  --tint-tomato:     color-mix(in srgb, var(--tomato) 12%, var(--note-white));   /* soft tomato wash — selected choice-card, text selection, demo bars */
+}
