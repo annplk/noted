@@ -12,4 +12,7 @@
 [https://annplk.github.io/noted/design-system/styleguide.html](https://annplk.github.io/noted/design-system/styleguide.html)
 
 ### Application Prototype
+*P.S. To see the welcome screen, please reload the page*
+
 [https://annplk.github.io/noted/app/index.html](https://annplk.github.io/noted/app/index.html)
+
